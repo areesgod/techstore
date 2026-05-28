@@ -1,12 +1,27 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from database import get_db
 import models, schemas
 from auth import get_admin_user
 from routers.orders import _order_out
+from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+class UserAdminOut(BaseModel):
+    id: int
+    name: str
+    email: str
+    is_admin: bool
+    created_at: datetime
+    order_count: int
+    total_spent: float
+
+    model_config = {"from_attributes": True}
 
 
 @router.get("/stats", response_model=schemas.AdminStats)
@@ -22,3 +37,46 @@ def get_stats(db: Session = Depends(get_db), _=Depends(get_admin_user)):
 def list_all_orders(db: Session = Depends(get_db), _=Depends(get_admin_user)):
     orders = db.query(models.Order).order_by(models.Order.created_at.desc()).all()
     return [_order_out(o) for o in orders]
+
+
+@router.get("/users", response_model=list[UserAdminOut])
+def list_all_users(db: Session = Depends(get_db), _=Depends(get_admin_user)):
+    users = db.query(models.User).order_by(models.User.created_at.desc()).all()
+    result = []
+    for u in users:
+        order_count = len(u.orders)
+        total_spent = sum(o.total for o in u.orders)
+        result.append(UserAdminOut(
+            id=u.id,
+            name=u.name,
+            email=u.email,
+            is_admin=u.is_admin,
+            created_at=u.created_at,
+            order_count=order_count,
+            total_spent=total_spent,
+        ))
+    return result
+
+
+@router.patch("/users/{user_id}/toggle-admin")
+def toggle_admin(user_id: int, db: Session = Depends(get_db), current=Depends(get_admin_user)):
+    user = db.get(models.User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.id == current.id:
+        raise HTTPException(status_code=400, detail="Cannot change your own admin status")
+    user.is_admin = not user.is_admin
+    db.commit()
+    return {"id": user.id, "is_admin": user.is_admin}
+
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db), current=Depends(get_admin_user)):
+    user = db.get(models.User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.id == current.id:
+        raise HTTPException(status_code=400, detail="Cannot delete yourself")
+    db.delete(user)
+    db.commit()
+    return {"ok": True}
