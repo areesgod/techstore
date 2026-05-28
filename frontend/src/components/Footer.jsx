@@ -1,7 +1,9 @@
 import { Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function Footer() {
+  const { t } = useTranslation()
   return (
     <footer className="bg-gray-900 text-gray-400 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -11,27 +13,27 @@ export default function Footer() {
               <Zap size={20} className="text-primary-400" />
               TechStore
             </div>
-            <p className="text-sm">Your one-stop shop for digital products and gadgets.</p>
+            <p className="text-sm">{t('footer.tagline')}</p>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-3">Shop</h4>
+            <h4 className="text-white font-semibold mb-3">{t('footer.shop')}</h4>
             <ul className="space-y-1 text-sm">
-              <li><Link to="/products" className="hover:text-white">All Products</Link></li>
-              <li><Link to="/products?category=digital" className="hover:text-white">Digital Products</Link></li>
-              <li><Link to="/products?category=gadgets" className="hover:text-white">Gadgets</Link></li>
+              <li><Link to="/products" className="hover:text-white">{t('footer.all_products')}</Link></li>
+              <li><Link to="/products?category=digital" className="hover:text-white">{t('footer.digital')}</Link></li>
+              <li><Link to="/products?category=gadgets" className="hover:text-white">{t('footer.gadgets')}</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-3">Account</h4>
+            <h4 className="text-white font-semibold mb-3">{t('footer.account')}</h4>
             <ul className="space-y-1 text-sm">
-              <li><Link to="/login" className="hover:text-white">Login</Link></li>
-              <li><Link to="/register" className="hover:text-white">Create Account</Link></li>
-              <li><Link to="/account" className="hover:text-white">My Downloads</Link></li>
+              <li><Link to="/login" className="hover:text-white">{t('footer.login')}</Link></li>
+              <li><Link to="/register" className="hover:text-white">{t('footer.create_account')}</Link></li>
+              <li><Link to="/account" className="hover:text-white">{t('footer.my_downloads')}</Link></li>
             </ul>
           </div>
         </div>
         <div className="border-t border-gray-800 mt-8 pt-6 text-center text-xs">
-          © {new Date().getFullYear()} TechStore. All rights reserved.
+          © {new Date().getFullYear()} TechStore. {t('footer.rights')}
         </div>
       </div>
     </footer>

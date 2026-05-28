@@ -1,14 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { ShoppingCart, User, Zap, Menu, X } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   const { count } = useCart()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const { t } = useTranslation()
 
   function handleLogout() {
     logout()
@@ -25,13 +28,15 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
-            <Link to="/products" className="text-gray-600 hover:text-primary-600 font-medium">Products</Link>
+            <Link to="/products" className="text-gray-600 hover:text-primary-600 font-medium">{t('nav.products')}</Link>
             {user?.is_admin && (
-              <Link to="/admin" className="text-gray-600 hover:text-primary-600 font-medium">Admin</Link>
+              <Link to="/admin" className="text-gray-600 hover:text-primary-600 font-medium">{t('nav.admin')}</Link>
             )}
           </div>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+
             <Link to="/cart" className="relative p-2 text-gray-600 hover:text-primary-600">
               <ShoppingCart size={22} />
               {count > 0 && (
@@ -47,12 +52,12 @@ export default function Navbar() {
                   <User size={18} />
                   <span className="text-sm font-medium">{user.name}</span>
                 </Link>
-                <button onClick={handleLogout} className="btn-secondary text-sm py-1.5">Logout</button>
+                <button onClick={handleLogout} className="btn-secondary text-sm py-1.5">{t('nav.logout')}</button>
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Link to="/login" className="btn-secondary text-sm py-1.5">Login</Link>
-                <Link to="/register" className="btn-primary text-sm py-1.5">Sign Up</Link>
+                <Link to="/login" className="btn-secondary text-sm py-1.5">{t('nav.login')}</Link>
+                <Link to="/register" className="btn-primary text-sm py-1.5">{t('nav.signup')}</Link>
               </div>
             )}
 
@@ -65,19 +70,19 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-2">
-          <Link to="/products" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>Products</Link>
+          <Link to="/products" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>{t('nav.products')}</Link>
           {user?.is_admin && (
-            <Link to="/admin" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>Admin</Link>
+            <Link to="/admin" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>{t('nav.admin')}</Link>
           )}
           {user ? (
             <>
-              <Link to="/account" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>My Account</Link>
-              <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="block py-2 text-red-600">Logout</button>
+              <Link to="/account" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>{t('nav.account')}</Link>
+              <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="block py-2 text-red-600">{t('nav.logout')}</button>
             </>
           ) : (
             <>
-              <Link to="/login" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>Login</Link>
-              <Link to="/register" className="block py-2 text-primary-600 font-medium" onClick={() => setMenuOpen(false)}>Sign Up</Link>
+              <Link to="/login" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>{t('nav.login')}</Link>
+              <Link to="/register" className="block py-2 text-primary-600 font-medium" onClick={() => setMenuOpen(false)}>{t('nav.signup')}</Link>
             </>
           )}
         </div>
