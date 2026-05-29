@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
 import LanguageSwitcher from './LanguageSwitcher'
+import GlobalSearch from './GlobalSearch'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
@@ -13,28 +14,33 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { t } = useTranslation()
 
-  function handleLogout() {
-    logout()
-    navigate('/')
-  }
+  function handleLogout() { logout(); navigate('/') }
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-primary-700">
+        <div className="flex items-center gap-4 h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-primary-700 shrink-0">
             <Zap size={22} className="text-primary-500" />
             TechStore
           </Link>
 
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/products" className="text-gray-600 hover:text-primary-600 font-medium">{t('nav.products')}</Link>
+          {/* Nav links */}
+          <div className="hidden md:flex items-center gap-4 shrink-0">
+            <Link to="/products" className="text-gray-600 hover:text-primary-600 font-medium text-sm">{t('nav.products')}</Link>
             {user?.is_admin && (
-              <Link to="/admin" className="text-gray-600 hover:text-primary-600 font-medium">{t('nav.admin')}</Link>
+              <Link to="/admin" className="text-gray-600 hover:text-primary-600 font-medium text-sm">{t('nav.admin')}</Link>
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Global search — takes remaining space */}
+          <div className="hidden md:flex flex-1">
+            <GlobalSearch />
+          </div>
+
+          {/* Right actions */}
+          <div className="flex items-center gap-2 shrink-0">
             <LanguageSwitcher />
 
             <Link to="/cart" className="relative p-2 text-gray-600 hover:text-primary-600">
@@ -66,8 +72,14 @@ export default function Navbar() {
             </button>
           </div>
         </div>
+
+        {/* Mobile search bar (below main row) */}
+        <div className="md:hidden pb-3">
+          <GlobalSearch />
+        </div>
       </div>
 
+      {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-2">
           <Link to="/products" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>{t('nav.products')}</Link>

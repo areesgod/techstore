@@ -1,6 +1,7 @@
 import { Routes, Route, Outlet } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import ShopLayout from './components/ShopLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import AdminLayout from './pages/admin/Layout'
@@ -15,11 +16,17 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Account from './pages/Account'
 
+import ShippingPage from './pages/info/Shipping'
+import ReturnsPage from './pages/info/Returns'
+import SupportPage from './pages/info/Support'
+import GuaranteePage from './pages/info/Guarantee'
+
 import AdminDashboard from './pages/admin/Dashboard'
 import AdminProducts from './pages/admin/Products'
 import AdminOrders from './pages/admin/Orders'
 import AdminUsers from './pages/admin/Users'
 
+// Wrapper that adds Navbar + Footer
 function StoreShell() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -33,11 +40,21 @@ function StoreShell() {
 export default function App() {
   return (
     <Routes>
-      {/* Public store — Navbar + Footer */}
+      {/* ── Store shell (Navbar + Footer) ── */}
       <Route element={<StoreShell />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
+
+        {/* Pages WITH sidebar (Home, Products, ProductDetail, info pages) */}
+        <Route element={<ShopLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/info/shipping" element={<ShippingPage />} />
+          <Route path="/info/returns" element={<ReturnsPage />} />
+          <Route path="/info/support" element={<SupportPage />} />
+          <Route path="/info/guarantee" element={<GuaranteePage />} />
+        </Route>
+
+        {/* Pages WITHOUT sidebar */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -49,7 +66,7 @@ export default function App() {
         </Route>
       </Route>
 
-      {/* Admin panel — own sidebar layout */}
+      {/* ── Admin panel (own sidebar layout, no store Navbar) ── */}
       <Route element={<AdminRoute />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />
