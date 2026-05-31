@@ -14,9 +14,16 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="TechStore API", version="1.0.0")
 
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    os.getenv("FRONTEND_URL", ""),   # set this in Render env vars
+]
+# Also allow all Vercel preview URLs and onrender.com frontends
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[o for o in ALLOWED_ORIGINS if o],
+    allow_origin_regex=r"https://.*\.(vercel\.app|onrender\.com|pages\.dev)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
