@@ -26,9 +26,8 @@ class ResetPasswordBody(BaseModel):
 def forgot_password(body: ForgotPasswordBody, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == body.email).first()
 
-    # Always return success to avoid email enumeration
     if not user:
-        return {"message": "Если такой email существует, мы отправили письмо."}
+        raise HTTPException(status_code=404, detail="Пользователь с таким email не найден")
 
     # Invalidate old tokens for this user
     db.query(models.PasswordResetToken).filter(
@@ -49,7 +48,7 @@ def forgot_password(body: ForgotPasswordBody, db: Session = Depends(get_db)):
     if not sent:
         print(f"[RESET] Token for {user.email}: {token}")
 
-    return {"message": "Если такой email существует, мы отправили письмо."}
+    return {"message": "Письмо со ссылкой для сброса пароля отправлено на ваш email."}
 
 
 @router.post("/reset-password")

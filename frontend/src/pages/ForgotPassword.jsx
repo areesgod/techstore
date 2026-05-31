@@ -16,8 +16,12 @@ export default function ForgotPassword() {
     try {
       await api.post('/auth/forgot-password', { email })
       setSent(true)
-    } catch {
-      setError('Произошла ошибка. Попробуйте позже.')
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setError('Аккаунт с таким email не зарегистрирован. Проверьте адрес или создайте новый аккаунт.')
+      } else {
+        setError(err.response?.data?.detail || 'Произошла ошибка. Попробуйте позже.')
+      }
     } finally {
       setLoading(false)
     }
