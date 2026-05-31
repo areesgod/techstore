@@ -135,6 +135,33 @@ def send_receipt_email(to_email: str, to_name: str, order_id: int, items: list, 
     return _send(to_email, f"Заказ #{order_id} подтверждён — TechStore", _wrap(body))
 
 
+# ── Email verification ────────────────────────────────────────────
+
+def send_verification_email(to_email: str, to_name: str, token: str) -> bool:
+    verify_url = f"{FRONTEND_URL}/verify-email?token={token}"
+    body = f"""
+    <h2 style="color:#1e293b;margin-top:0">Подтвердите ваш email ✉️</h2>
+    <p style="color:#475569">Привет, <strong>{to_name}</strong>!</p>
+    <p style="color:#475569">Спасибо за регистрацию в TechStore. Пожалуйста, подтвердите свой email-адрес,
+       чтобы получить полный доступ к аккаунту.</p>
+    <div style="text-align:center;margin:32px 0">
+      <a href="{verify_url}"
+         style="background:#16a34a;color:white;text-decoration:none;padding:14px 32px;
+                border-radius:8px;font-weight:700;font-size:15px;display:inline-block">
+        Подтвердить email
+      </a>
+    </div>
+    <p style="color:#94a3b8;font-size:13px">
+      Ссылка действительна в течение <strong>24 часов</strong>.
+    </p>
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+    <p style="color:#94a3b8;font-size:11px;word-break:break-all">
+      Или вставьте эту ссылку в браузер:<br>{verify_url}
+    </p>
+    """
+    return _send(to_email, "Подтвердите email — TechStore", _wrap(body))
+
+
 # ── Welcome email ─────────────────────────────────────────────────
 
 def send_welcome_email(to_email: str, to_name: str) -> bool:

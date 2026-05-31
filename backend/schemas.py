@@ -18,6 +18,7 @@ class UserOut(BaseModel):
     branch_id: Optional[int]
     cashback_balance: float
     total_spent: float
+    email_verified: bool
     created_at: datetime
     model_config = {"from_attributes": True}
 

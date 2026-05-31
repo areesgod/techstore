@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from auth import hash_password, verify_password, create_access_token, get_current_user
-from email_utils import send_welcome_email
+from routers.email_verification import create_and_send_verification
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -17,14 +17,17 @@ def register(body: schemas.UserCreate, db: Session = Depends(get_db)):
         name=body.name,
         email=body.email,
         hashed_password=hash_password(body.password),
+        email_verified=False,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
+
     try:
-        send_welcome_email(user.email, user.name)
+        create_and_send_verification(db, user)
     except Exception as e:
-        print(f"[EMAIL] Welcome email failed: {e}")
+        print(f"[EMAIL] Verification email failed: {e}")
+
     return user
 
 

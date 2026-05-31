@@ -2,6 +2,7 @@ import { Routes, Route, Outlet } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ShopLayout from './components/ShopLayout'
+import EmailVerifyBanner from './components/EmailVerifyBanner'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import EmployeeRoute from './components/EmployeeRoute'
@@ -19,6 +20,7 @@ import Register from './pages/Register'
 import Account from './pages/Account'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import VerifyEmail from './pages/VerifyEmail'
 
 import ShippingPage from './pages/info/Shipping'
 import ReturnsPage from './pages/info/Returns'
@@ -37,6 +39,7 @@ function StoreShell() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <EmailVerifyBanner />
       <main className="flex-1"><Outlet /></main>
       <Footer />
     </div>
@@ -62,6 +65,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<Cart />} />

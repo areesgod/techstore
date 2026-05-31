@@ -19,7 +19,7 @@ export default function Register() {
     setLoading(true)
     try {
       await register(form.name, form.email, form.password)
-      toast.success('Account created! Welcome to TechStore.')
+      toast.success('Аккаунт создан! Проверьте почту для подтверждения email.', { duration: 5000 })
       navigate('/')
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Registration failed')

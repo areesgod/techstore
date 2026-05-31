@@ -17,6 +17,7 @@ class User(Base):
     branch_id: Mapped[int | None] = mapped_column(ForeignKey("branches.id"), nullable=True)
     cashback_balance: Mapped[float] = mapped_column(Float, default=0.0)
     total_spent: Mapped[float] = mapped_column(Float, default=0.0)
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     orders: Mapped[list["Order"]] = relationship("Order", back_populates="user")
@@ -104,6 +105,19 @@ class OrderItem(Base):
 
     order: Mapped["Order"] = relationship("Order", back_populates="items")
     product: Mapped["Product"] = relationship("Product", back_populates="order_items")
+
+
+class EmailVerificationToken(Base):
+    __tablename__ = "email_verification_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    token: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    used: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    user: Mapped["User"] = relationship("User")
 
 
 class PasswordResetToken(Base):
