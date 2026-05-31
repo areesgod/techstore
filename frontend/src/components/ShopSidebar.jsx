@@ -1,4 +1,4 @@
-import { NavLink, useSearchParams } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Truck, RefreshCw, Headphones, ShieldCheck, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -11,8 +11,14 @@ const infoLinks = [
 
 export default function ShopSidebar() {
   const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const category = searchParams.get('category') || 'all'
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // Read active category from URL regardless of which page we're on
+  const params = new URLSearchParams(location.search)
+  const activeCategory = location.pathname === '/products'
+    ? (params.get('category') || 'all')
+    : 'all'
 
   const categories = [
     { key: 'all', label: t('products.filter_all') },
@@ -20,9 +26,10 @@ export default function ShopSidebar() {
     { key: 'gadgets', label: t('products.filter_gadgets') },
   ]
 
-  function setCategory(c) {
-    if (c === 'all') setSearchParams({})
-    else setSearchParams({ category: c })
+  function handleCategory(key) {
+    // Always navigate to /products with the correct query param
+    if (key === 'all') navigate('/products')
+    else navigate(`/products?category=${key}`)
   }
 
   return (
@@ -35,18 +42,17 @@ export default function ShopSidebar() {
         <ul className="space-y-0.5">
           {categories.map((c) => (
             <li key={c.key}>
-              <NavLink
-                to={c.key === 'all' ? '/products' : `/products?category=${c.key}`}
-                onClick={(e) => { e.preventDefault(); setCategory(c.key) }}
+              <button
+                onClick={() => handleCategory(c.key)}
                 className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm transition-colors ${
-                  category === c.key
+                  activeCategory === c.key
                     ? 'bg-primary-600 text-white font-medium'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 {c.label}
                 <ChevronRight size={13} className="opacity-50" />
-              </NavLink>
+              </button>
             </li>
           ))}
         </ul>
