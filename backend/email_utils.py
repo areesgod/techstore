@@ -1,72 +1,45 @@
 """
-Email utility — supports any SMTP provider.
+Email utility — uses Resend HTTP API (works on Render free tier).
 
 Set these environment variables:
-  SMTP_HOST      e.g. smtp.gmail.com | smtp.mailtrap.io | smtp.sendgrid.net
-  SMTP_PORT      587 (TLS) or 465 (SSL) — default 587
-  SMTP_USER      your email / API key username
-  SMTP_PASSWORD  your password / API key
-  SMTP_FROM      sender address, e.g. noreply@techstore.com
-  FRONTEND_URL   your live frontend URL, e.g. https://techstore.vercel.app
+  RESEND_API_KEY   — get one free at https://resend.com
+  EMAIL_FROM       — your verified sender (e.g. onboarding@resend.dev for testing)
+  FRONTEND_URL     — your live frontend URL
 
-Gmail quick setup:
-  1. Enable 2-Step Verification on your Google account
-  2. Go to myaccount.google.com/apppasswords
-  3. Create an App Password for "Mail"
-  4. Use that 16-char password as SMTP_PASSWORD
-  SMTP_HOST=smtp.gmail.com  SMTP_PORT=587  SMTP_USER=you@gmail.com
-
-Mailtrap (free testing — emails never reach real inboxes):
-  Sign up at mailtrap.io → Inboxes → SMTP Settings
-  SMTP_HOST=sandbox.smtp.mailtrap.io  SMTP_PORT=587
-
-SendGrid (production, 100 free emails/day):
-  SMTP_HOST=smtp.sendgrid.net  SMTP_PORT=587
-  SMTP_USER=apikey  SMTP_PASSWORD=<your SendGrid API key>
+Setup (5 min):
+  1. Sign up at resend.com (GitHub login)
+  2. Go to API Keys → Create API Key → copy it
+  3. Set RESEND_API_KEY on Render
+  4. For testing use from: "onboarding@resend.dev"
+  5. For production: add your domain in Resend → Domains → verify DNS
 """
 
 import os
-import smtplib
-import ssl
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import resend
 
-SMTP_HOST = os.getenv("SMTP_HOST", "")
-SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASS = os.getenv("SMTP_PASSWORD", "")
-SMTP_FROM = os.getenv("SMTP_FROM", "noreply@techstore.com")
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+EMAIL_FROM = os.getenv("EMAIL_FROM", "onboarding@resend.dev")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
 
 
 def _send(to: str, subject: str, html: str) -> bool:
-    """Low-level send. Returns True on success, False on failure."""
-    if not SMTP_HOST or not SMTP_USER:
-        print(f"[EMAIL] SMTP not configured — would send '{subject}' to {to}")
+    if not RESEND_API_KEY:
+        print(f"[EMAIL] RESEND_API_KEY not set — would send '{subject}' to {to}")
         return False
-
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = SMTP_FROM
-    msg["To"] = to
-    msg.attach(MIMEText(html, "html"))
-
     try:
-        if SMTP_PORT == 465:
-            context = ssl.create_default_context()
-            with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=context) as server:
-                server.login(SMTP_USER, SMTP_PASS)
-                server.sendmail(SMTP_FROM, to, msg.as_string())
-        else:
-            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-                server.ehlo()
-                server.starttls()
-                server.login(SMTP_USER, SMTP_PASS)
-                server.sendmail(SMTP_FROM, to, msg.as_string())
-        print(f"[EMAIL] ✓ Sent '{subject}' → {to}")
+        r = resend.Emails.send({
+            "from": f"TechStore <{EMAIL_FROM}>",
+            "to": [to],
+            "subject": subject,
+            "html": html,
+        })
+        print(f"[EMAIL] ✓ Sent '{subject}' → {to} (id: {r.get('id', '?')})")
         return True
     except Exception as e:
-        print(f"[EMAIL] ✗ Failed to send '{subject}' → {to}: {e}")
+        print(f"[EMAIL] ✗ Failed: {e}")
         return False
 
 
