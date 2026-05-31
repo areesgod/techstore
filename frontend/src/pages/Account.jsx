@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Download, Package, User, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { formatPrice } from '../utils/price'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../api/client'
 
@@ -57,11 +58,11 @@ export default function Account() {
             <div key={order.id} className="card p-5">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="font-mono text-sm text-gray-500">Order #{order.id}</span>
-                  <span className="ml-3 text-sm text-gray-400">{new Date(order.created_at).toLocaleDateString()}</span>
+                  <span className="font-mono text-sm text-gray-500">#{order.id}</span>
+                  <span className="ml-3 text-sm text-gray-400">{new Date(order.created_at).toLocaleDateString('ru-RU')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-primary-700">${order.total.toFixed(2)}</span>
+                  <span className="text-sm font-bold text-primary-700">{formatPrice(order.total)}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${order.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                     {order.status}
                   </span>

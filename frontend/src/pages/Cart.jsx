@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatPrice } from '../utils/price'
 import { useCart } from '../contexts/CartContext'
 
 export default function Cart() {
@@ -31,14 +32,14 @@ export default function Cart() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-900 truncate">{item.name}</p>
-                <p className="text-sm text-gray-500">${item.price.toFixed(2)} each</p>
+                <p className="text-sm text-gray-500">{formatPrice(item.price)}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 hover:bg-gray-100 rounded"><Minus size={14} /></button>
                 <span className="w-8 text-center font-medium">{item.quantity}</span>
                 <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 hover:bg-gray-100 rounded"><Plus size={14} /></button>
               </div>
-              <span className="font-bold text-primary-700 w-20 text-right">${(item.price * item.quantity).toFixed(2)}</span>
+              <span className="font-bold text-primary-700 w-24 text-right">{formatPrice(item.price * item.quantity)}</span>
               <button onClick={() => removeItem(item.id)} className="p-1.5 hover:bg-red-50 hover:text-red-600 rounded text-gray-400 transition-colors">
                 <Trash2 size={16} />
               </button>
@@ -49,10 +50,10 @@ export default function Cart() {
         <div className="card p-6 h-fit">
           <h2 className="text-lg font-bold text-gray-900 mb-4">{t('cart.summary')}</h2>
           <div className="space-y-2 text-sm mb-4">
-            <div className="flex justify-between text-gray-600"><span>{t('cart.subtotal')}</span><span>${total.toFixed(2)}</span></div>
-            <div className="flex justify-between text-gray-600"><span>{t('cart.tax')}</span><span>$0.00</span></div>
+            <div className="flex justify-between text-gray-600"><span>{t('cart.subtotal')}</span><span>{formatPrice(total)}</span></div>
+            <div className="flex justify-between text-gray-600"><span>{t('cart.tax')}</span><span>₸0</span></div>
             <div className="border-t pt-2 flex justify-between font-bold text-gray-900 text-base">
-              <span>{t('cart.total')}</span><span>${total.toFixed(2)}</span>
+              <span>{t('cart.total')}</span><span>{formatPrice(total)}</span>
             </div>
           </div>
           <Link to="/checkout" className="btn-primary w-full text-center block py-3">{t('cart.checkout')}</Link>

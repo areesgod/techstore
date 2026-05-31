@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ShoppingCart, Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../contexts/CartContext'
+import { formatPrice } from '../utils/price'
 import toast from 'react-hot-toast'
 
 export default function ProductCard({ product }) {
@@ -35,7 +36,7 @@ export default function ProductCard({ product }) {
         </div>
         <p className="text-sm text-gray-500 line-clamp-2 mb-3">{product.description}</p>
         <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-primary-700">${product.price.toFixed(2)}</span>
+          <span className="text-lg font-bold text-primary-700">{formatPrice(product.price)}</span>
           <button onClick={handleAdd} className="btn-primary text-sm py-1.5 flex items-center gap-1.5">
             {product.is_digital ? <Download size={14} /> : <ShoppingCart size={14} />}
             {t('products.add_to_cart')}

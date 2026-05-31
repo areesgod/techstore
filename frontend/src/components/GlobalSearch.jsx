@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatPrice } from '../utils/price'
 import api from '../api/client'
 
 function fuzzyMatch(product, query) {
@@ -29,21 +30,17 @@ export default function GlobalSearch() {
   const inputRef = useRef(null)
   const wrapperRef = useRef(null)
 
-  // Load product list once
   useEffect(() => {
     api.get('/products?limit=100')
       .then((r) => { setAllProducts(r.data); setLoaded(true) })
       .catch(() => {})
   }, [])
 
-  // Filter on every keystroke
   useEffect(() => {
     if (!query.trim()) { setResults([]); return }
-    const matches = allProducts.filter((p) => fuzzyMatch(p, query)).slice(0, 6)
-    setResults(matches)
+    setResults(allProducts.filter((p) => fuzzyMatch(p, query)).slice(0, 6))
   }, [query, allProducts])
 
-  // Close on outside click
   useEffect(() => {
     function handle(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setOpen(false)
@@ -97,29 +94,22 @@ export default function GlobalSearch() {
                 {t('search.suggestions')}
               </div>
               {results.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => goToProduct(p.id)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left"
-                >
+                <button key={p.id} onClick={() => goToProduct(p.id)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
                   <div className="w-9 h-9 bg-primary-50 rounded-lg flex items-center justify-center text-lg shrink-0">
-                    {p.image_url
-                      ? <img src={p.image_url} alt="" className="w-full h-full object-cover rounded-lg" />
-                      : (p.is_digital ? '💾' : '📦')}
+                    {p.image_url ? <img src={p.image_url} alt="" className="w-full h-full object-cover rounded-lg" /> : (p.is_digital ? '💾' : '📦')}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-900 truncate">{p.name}</p>
-                    <p className="text-xs text-gray-400">${p.price.toFixed(2)}</p>
+                    <p className="text-xs text-gray-400">{formatPrice(p.price)}</p>
                   </div>
                   <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${p.is_digital ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'}`}>
                     {p.is_digital ? 'Digital' : 'Gadget'}
                   </span>
                 </button>
               ))}
-              <button
-                onClick={handleSubmit}
-                className="w-full px-3 py-2.5 text-sm text-primary-600 hover:bg-primary-50 transition-colors text-left border-t border-gray-100 font-medium"
-              >
+              <button onClick={handleSubmit}
+                className="w-full px-3 py-2.5 text-sm text-primary-600 hover:bg-primary-50 transition-colors text-left border-t border-gray-100 font-medium">
                 {t('search.view_all', { query })}
               </button>
             </>

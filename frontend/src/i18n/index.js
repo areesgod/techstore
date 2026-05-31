@@ -15,9 +15,9 @@ i18n
       ru: { translation: ru },
       kz: { translation: kz },
     },
-    fallbackLng: 'en',
+    fallbackLng: 'ru',
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],   // ignore browser language — default to ru
       caches: ['localStorage'],
     },
     interpolation: { escapeValue: false },

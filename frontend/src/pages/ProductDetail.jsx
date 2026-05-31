@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ShoppingCart, Download, ArrowLeft, CheckCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatPrice } from '../utils/price'
 import api from '../api/client'
 import { useCart } from '../contexts/CartContext'
 import toast from 'react-hot-toast'
@@ -24,7 +25,7 @@ export default function ProductDetail() {
   if (!product) return <div className="text-center py-20 text-gray-500">Product not found.</div>
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div>
       <Link to="/products" className="inline-flex items-center gap-1 text-gray-500 hover:text-primary-600 mb-6 text-sm">
         <ArrowLeft size={16} /> {t('products.back')}
       </Link>
@@ -54,7 +55,7 @@ export default function ProductDetail() {
           )}
 
           <div className="flex items-center gap-4">
-            <span className="text-3xl font-bold text-primary-700">${product.price.toFixed(2)}</span>
+            <span className="text-3xl font-bold text-primary-700">{formatPrice(product.price)}</span>
             {!product.is_digital && product.stock !== null && (
               <span className={`text-sm ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {product.stock > 0 ? t('products.in_stock', { count: product.stock }) : t('products.out_of_stock')}

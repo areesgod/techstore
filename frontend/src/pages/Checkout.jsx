@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CreditCard, Lock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatPrice } from '../utils/price'
 import { useCart } from '../contexts/CartContext'
 import api from '../api/client'
 import toast from 'react-hot-toast'
@@ -56,11 +57,11 @@ export default function Checkout() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.full_name')}</label>
-                <input required className="input" placeholder="John Doe" value={billing.name} onChange={(e) => setBilling({ ...billing, name: e.target.value })} />
+                <input required className="input" placeholder="Иван Иванов" value={billing.name} onChange={(e) => setBilling({ ...billing, name: e.target.value })} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.email')}</label>
-                <input required type="email" className="input" placeholder="john@example.com" value={billing.email} onChange={(e) => setBilling({ ...billing, email: e.target.value })} />
+                <input required type="email" className="input" placeholder="ivan@example.com" value={billing.email} onChange={(e) => setBilling({ ...billing, email: e.target.value })} />
               </div>
             </div>
           </div>
@@ -81,7 +82,7 @@ export default function Checkout() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.card_holder')}</label>
-                <input required className="input" placeholder="JOHN DOE" value={card.holder} onChange={(e) => setCard({ ...card, holder: e.target.value })} />
+                <input required className="input" placeholder="IVAN IVANOV" value={card.holder} onChange={(e) => setCard({ ...card, holder: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -103,16 +104,16 @@ export default function Checkout() {
             {items.map((item) => (
               <div key={item.id} className="flex justify-between text-sm text-gray-700">
                 <span className="truncate mr-2">{item.name} × {item.quantity}</span>
-                <span className="shrink-0">${(item.price * item.quantity).toFixed(2)}</span>
+                <span className="shrink-0">{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
           </div>
           <div className="border-t pt-3 flex justify-between font-bold text-gray-900 mb-5">
-            <span>{t('checkout.summary')}</span><span>${total.toFixed(2)}</span>
+            <span>{t('cart.total')}</span><span>{formatPrice(total)}</span>
           </div>
           <button type="submit" disabled={loading || items.length === 0} className="btn-primary w-full py-3 text-base flex items-center justify-center gap-2">
             {loading ? <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" /> : <Lock size={16} />}
-            {loading ? t('checkout.processing') : t('checkout.pay', { amount: `$${total.toFixed(2)}` })}
+            {loading ? t('checkout.processing') : t('checkout.pay', { amount: formatPrice(total) })}
           </button>
         </div>
       </form>

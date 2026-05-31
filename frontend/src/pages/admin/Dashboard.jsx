@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  DollarSign, ShoppingBag, Package, Users,
-  TrendingUp, ArrowRight
-} from 'lucide-react'
+import { DollarSign, ShoppingBag, Package, Users, TrendingUp, ArrowRight } from 'lucide-react'
+import { formatPrice } from '../../utils/price'
 import api from '../../api/client'
 
 export default function AdminDashboard() {
@@ -16,38 +14,10 @@ export default function AdminDashboard() {
   }, [])
 
   const cards = [
-    {
-      label: 'Total Revenue',
-      value: stats ? `$${stats.revenue.toFixed(2)}` : '—',
-      icon: <DollarSign size={22} />,
-      color: 'text-green-600',
-      bg: 'bg-green-50',
-      border: 'border-green-100',
-    },
-    {
-      label: 'Total Orders',
-      value: stats?.orders ?? '—',
-      icon: <ShoppingBag size={22} />,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      border: 'border-blue-100',
-    },
-    {
-      label: 'Active Products',
-      value: stats?.products ?? '—',
-      icon: <Package size={22} />,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100',
-    },
-    {
-      label: 'Customers',
-      value: stats?.customers ?? '—',
-      icon: <Users size={22} />,
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100',
-    },
+    { label: 'Total Revenue', value: stats ? formatPrice(stats.revenue) : '—', icon: <DollarSign size={22} />, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100' },
+    { label: 'Total Orders', value: stats?.orders ?? '—', icon: <ShoppingBag size={22} />, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+    { label: 'Active Products', value: stats?.products ?? '—', icon: <Package size={22} />, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100' },
+    { label: 'Customers', value: stats?.customers ?? '—', icon: <Users size={22} />, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100' },
   ]
 
   return (
@@ -57,7 +27,6 @@ export default function AdminDashboard() {
         <p className="text-gray-500 text-sm mt-1">Welcome back! Here's what's happening in your store.</p>
       </div>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
         {cards.map((c) => (
           <div key={c.label} className={`bg-white rounded-xl border ${c.border} p-5 flex items-center gap-4 shadow-sm`}>
@@ -70,7 +39,6 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Recent orders */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2">
@@ -106,13 +74,11 @@ export default function AdminDashboard() {
                       <p className="text-xs text-gray-400">{o.billing_email}</p>
                     </td>
                     <td className="px-6 py-3 text-gray-600">{o.items?.length}</td>
-                    <td className="px-6 py-3 font-semibold text-primary-700">${o.total.toFixed(2)}</td>
+                    <td className="px-6 py-3 font-semibold text-primary-700">{formatPrice(o.total)}</td>
                     <td className="px-6 py-3">
-                      <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium">
-                        {o.status}
-                      </span>
+                      <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium">{o.status}</span>
                     </td>
-                    <td className="px-6 py-3 text-gray-400">{new Date(o.created_at).toLocaleDateString()}</td>
+                    <td className="px-6 py-3 text-gray-400">{new Date(o.created_at).toLocaleDateString('ru-RU')}</td>
                   </tr>
                 ))}
               </tbody>

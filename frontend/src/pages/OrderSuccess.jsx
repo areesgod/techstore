@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { CheckCircle, Download, Mail, Package } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatPrice } from '../utils/price'
 import api from '../api/client'
 
 export default function OrderSuccess() {
@@ -38,7 +39,7 @@ export default function OrderSuccess() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 text-sm">{item.product_name}</p>
-                    <p className="text-xs text-gray-500">${item.unit_price.toFixed(2)} × {item.quantity}</p>
+                    <p className="text-xs text-gray-500">{formatPrice(item.unit_price)} × {item.quantity}</p>
                   </div>
                 </div>
                 {item.download_token && (
