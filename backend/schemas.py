@@ -17,6 +17,7 @@ class UserOut(BaseModel):
     is_employee: bool
     branch_id: Optional[int]
     cashback_balance: float
+    total_spent: float
     created_at: datetime
     model_config = {"from_attributes": True}
 
@@ -94,7 +95,9 @@ class OrderCreate(BaseModel):
     billing_name: str
     delivery_city: Optional[str] = None
     use_cashback: bool = False
-    payment: PaymentInfo
+    payment_method: str = "card"          # card | cash | installment
+    installment_months: Optional[int] = None  # 3 | 6 | 12
+    payment: Optional[PaymentInfo] = None
 
 
 class OrderItemOut(BaseModel):
@@ -116,6 +119,8 @@ class OrderOut(BaseModel):
     total: float
     cashback_used: float
     cashback_earned: float
+    payment_method: str
+    installment_months: Optional[int]
     status: str
     payment_ref: Optional[str]
     branch_id: Optional[int]

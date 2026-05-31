@@ -16,6 +16,7 @@ class User(Base):
     is_employee: Mapped[bool] = mapped_column(Boolean, default=False)
     branch_id: Mapped[int | None] = mapped_column(ForeignKey("branches.id"), nullable=True)
     cashback_balance: Mapped[float] = mapped_column(Float, default=0.0)
+    total_spent: Mapped[float] = mapped_column(Float, default=0.0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     orders: Mapped[list["Order"]] = relationship("Order", back_populates="user")
@@ -79,6 +80,8 @@ class Order(Base):
     total: Mapped[float] = mapped_column(Float)
     cashback_used: Mapped[float] = mapped_column(Float, default=0.0)
     cashback_earned: Mapped[float] = mapped_column(Float, default=0.0)
+    payment_method: Mapped[str] = mapped_column(String(20), default="card")  # card | cash | installment
+    installment_months: Mapped[int | None] = mapped_column(Integer, nullable=True)
     status: Mapped[str] = mapped_column(String(50), default="pending")
     payment_ref: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

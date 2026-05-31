@@ -6,10 +6,10 @@ import models, schemas
 from auth import get_current_user
 from email_utils import send_receipt_email
 from data.cities import CITIES
+from data.loyalty import get_tier
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
-CASHBACK_RATE = 0.03
 CASHBACK_MAX_USE = 0.20
 CASHBACK_MIN_USE = 500
 
@@ -35,6 +35,8 @@ def _order_out(order: models.Order) -> schemas.OrderOut:
         total=order.total,
         cashback_used=order.cashback_used,
         cashback_earned=order.cashback_earned,
+        payment_method=order.payment_method,
+        installment_months=order.installment_months,
         status=order.status,
         payment_ref=order.payment_ref,
         branch_id=order.branch_id,
@@ -52,9 +54,15 @@ def create_order(
     if not body.items:
         raise HTTPException(status_code=400, detail="Order must contain at least one item")
 
+    method = body.payment_method  # card | cash | installment
+    if method not in ("card", "cash", "installment"):
+        raise HTTPException(status_code=400, detail="Invalid payment method")
+    if method == "installment" and body.installment_months not in (3, 6, 12):
+        raise HTTPException(status_code=400, detail="Installment months must be 3, 6, or 12")
+
+    # Build order items
     subtotal = 0.0
     order_items_data = []
-
     for item_in in body.items:
         product = db.get(models.Product, item_in.product_id)
         if not product or not product.is_active:
@@ -64,22 +72,27 @@ def create_order(
         subtotal += product.price * item_in.quantity
         order_items_data.append((product, item_in.quantity, product.price))
 
-    # Cashback deduction
+    # Cashback redemption (only card payments can use cashback)
     user = db.get(models.User, current_user.id)
     cashback_used = 0.0
-    if body.use_cashback and user.cashback_balance >= CASHBACK_MIN_USE:
+    if method == "card" and body.use_cashback and user.cashback_balance >= CASHBACK_MIN_USE:
         max_use = min(user.cashback_balance, subtotal * CASHBACK_MAX_USE)
         cashback_used = round(max_use, 2)
 
     total = round(subtotal - cashback_used, 2)
-    cashback_earned = round(total * CASHBACK_RATE, 2)
 
-    # Determine branch from delivery city
+    # Cashback earned — only on card payments, rate based on loyalty tier
+    cashback_earned = 0.0
+    if method == "card":
+        tier = get_tier(user.total_spent)
+        cashback_earned = round(total * tier["rate"], 2)
+
+    # Determine branch from city
     branch_id = None
     if body.delivery_city and body.delivery_city in CITIES:
         branch_id = CITIES[body.delivery_city]["branch_id"]
 
-    payment_ref = f"MOCK-{uuid.uuid4().hex[:12].upper()}"
+    payment_ref = f"{'CASH' if method=='cash' else 'INST' if method=='installment' else 'MOCK'}-{uuid.uuid4().hex[:10].upper()}"
 
     order = models.Order(
         user_id=current_user.id,
@@ -90,6 +103,8 @@ def create_order(
         total=total,
         cashback_used=cashback_used,
         cashback_earned=cashback_earned,
+        payment_method=method,
+        installment_months=body.installment_months if method == "installment" else None,
         status="pending",
         payment_ref=payment_ref,
     )
@@ -100,16 +115,12 @@ def create_order(
     for product, qty, price in order_items_data:
         token = uuid.uuid4().hex if product.is_digital else None
         oi = models.OrderItem(
-            order_id=order.id,
-            product_id=product.id,
-            quantity=qty,
-            unit_price=price,
-            download_token=token,
+            order_id=order.id, product_id=product.id,
+            quantity=qty, unit_price=price, download_token=token,
         )
         db.add(oi)
         if not product.is_digital and product.stock is not None:
             product.stock -= qty
-            # Deduct branch stock too
             if branch_id:
                 bs = db.query(models.BranchStock).filter(
                     models.BranchStock.branch_id == branch_id,
@@ -119,21 +130,25 @@ def create_order(
                     bs.quantity -= qty
         email_items.append({"name": product.name, "quantity": qty, "price": price * qty})
 
-    # Apply cashback changes to user wallet
-    if cashback_used > 0:
-        user.cashback_balance = round(user.cashback_balance - cashback_used, 2)
-        db.add(models.CashbackTransaction(
-            user_id=user.id, order_id=order.id,
-            amount=-cashback_used, type="used",
-            description=f"Использован кэшбэк для заказа #{order.id}",
-        ))
+    # Apply cashback changes (card only)
+    if method == "card":
+        if cashback_used > 0:
+            user.cashback_balance = round(user.cashback_balance - cashback_used, 2)
+            db.add(models.CashbackTransaction(
+                user_id=user.id, order_id=order.id,
+                amount=-cashback_used, type="used",
+                description=f"Использован кэшбэк для заказа #{order.id}",
+            ))
+        if cashback_earned > 0:
+            user.cashback_balance = round(user.cashback_balance + cashback_earned, 2)
+            db.add(models.CashbackTransaction(
+                user_id=user.id, order_id=order.id,
+                amount=cashback_earned, type="earned",
+                description=f"Кэшбэк за заказ #{order.id} ({round(get_tier(user.total_spent)['rate']*100)}%)",
+            ))
 
-    user.cashback_balance = round(user.cashback_balance + cashback_earned, 2)
-    db.add(models.CashbackTransaction(
-        user_id=user.id, order_id=order.id,
-        amount=cashback_earned, type="earned",
-        description=f"Кэшбэк 3% за заказ #{order.id}",
-    ))
+    # Update total spent (all payment methods count toward loyalty)
+    user.total_spent = round(user.total_spent + total, 2)
 
     db.commit()
     db.refresh(order)
