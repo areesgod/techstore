@@ -17,6 +17,8 @@ import OrderSuccess from './pages/OrderSuccess'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Account from './pages/Account'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 import ShippingPage from './pages/info/Shipping'
 import ReturnsPage from './pages/info/Returns'
@@ -58,6 +60,8 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<Cart />} />

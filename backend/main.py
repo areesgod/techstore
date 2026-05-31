@@ -8,7 +8,7 @@ load_dotenv()
 from database import engine, Base
 import models
 
-from routers import auth, products, orders, downloads, admin, branches, cashback, employee, delivery
+from routers import auth, products, orders, downloads, admin, branches, cashback, employee, delivery, password_reset
 
 Base.metadata.create_all(bind=engine)
 
@@ -28,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for router in [auth, products, orders, downloads, admin, branches, cashback, employee, delivery]:
+for router in [auth, products, orders, downloads, admin, branches, cashback, employee, delivery, password_reset]:
     app.include_router(router.router, prefix="/api")
 
 

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from auth import hash_password, verify_password, create_access_token, get_current_user
+from email_utils import send_welcome_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -20,6 +21,10 @@ def register(body: schemas.UserCreate, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
+    try:
+        send_welcome_email(user.email, user.name)
+    except Exception as e:
+        print(f"[EMAIL] Welcome email failed: {e}")
     return user
 
 

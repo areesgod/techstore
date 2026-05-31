@@ -45,7 +45,10 @@ export default function Login() {
               <input required type="email" className="input" placeholder="you@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">{t('auth.password')}</label>
+                <Link to="/forgot-password" className="text-xs text-primary-600 hover:underline">Забыли пароль?</Link>
+              </div>
               <input required type="password" className="input" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
             </div>
             <button type="submit" disabled={loading} className="btn-primary w-full py-2.5 mt-2">
