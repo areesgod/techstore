@@ -4,7 +4,9 @@ import Footer from './components/Footer'
 import ShopLayout from './components/ShopLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
+import EmployeeRoute from './components/EmployeeRoute'
 import AdminLayout from './pages/admin/Layout'
+import EmployeeLayout from './pages/employee/Layout'
 
 import Home from './pages/Home'
 import Products from './pages/Products'
@@ -26,7 +28,9 @@ import AdminProducts from './pages/admin/Products'
 import AdminOrders from './pages/admin/Orders'
 import AdminUsers from './pages/admin/Users'
 
-// Wrapper that adds Navbar + Footer
+import EmployeeDashboard from './pages/employee/Dashboard'
+import EmployeeOrders from './pages/employee/Orders'
+
 function StoreShell() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -40,10 +44,8 @@ function StoreShell() {
 export default function App() {
   return (
     <Routes>
-      {/* ── Store shell (Navbar + Footer) ── */}
+      {/* ── Store (Navbar + Footer) ── */}
       <Route element={<StoreShell />}>
-
-        {/* Pages WITH sidebar (Home, Products, ProductDetail, info pages) */}
         <Route element={<ShopLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -54,7 +56,6 @@ export default function App() {
           <Route path="/info/guarantee" element={<GuaranteePage />} />
         </Route>
 
-        {/* Pages WITHOUT sidebar */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -66,7 +67,15 @@ export default function App() {
         </Route>
       </Route>
 
-      {/* ── Admin panel (own sidebar layout, no store Navbar) ── */}
+      {/* ── Employee portal ── */}
+      <Route element={<EmployeeRoute />}>
+        <Route element={<EmployeeLayout />}>
+          <Route path="/employee" element={<EmployeeDashboard />} />
+          <Route path="/employee/orders" element={<EmployeeOrders />} />
+        </Route>
+      </Route>
+
+      {/* ── Admin panel ── */}
       <Route element={<AdminRoute />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />

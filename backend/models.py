@@ -13,9 +13,39 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_employee: Mapped[bool] = mapped_column(Boolean, default=False)
+    branch_id: Mapped[int | None] = mapped_column(ForeignKey("branches.id"), nullable=True)
+    cashback_balance: Mapped[float] = mapped_column(Float, default=0.0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     orders: Mapped[list["Order"]] = relationship("Order", back_populates="user")
+    cashback_transactions: Mapped[list["CashbackTransaction"]] = relationship("CashbackTransaction", back_populates="user")
+    branch: Mapped["Branch | None"] = relationship("Branch", foreign_keys=[branch_id])
+
+
+class Branch(Base):
+    __tablename__ = "branches"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(255))
+    city: Mapped[str] = mapped_column(String(100))
+    address: Mapped[str] = mapped_column(String(512))
+    phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    stock: Mapped[list["BranchStock"]] = relationship("BranchStock", back_populates="branch")
+
+
+class BranchStock(Base):
+    __tablename__ = "branch_stock"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id"))
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    quantity: Mapped[int] = mapped_column(Integer, default=0)
+
+    branch: Mapped["Branch"] = relationship("Branch", back_populates="stock")
+    product: Mapped["Product"] = relationship("Product")
 
 
 class Product(Base):
@@ -42,15 +72,21 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    branch_id: Mapped[int | None] = mapped_column(ForeignKey("branches.id"), nullable=True)
     billing_name: Mapped[str] = mapped_column(String(255))
     billing_email: Mapped[str] = mapped_column(String(255))
+    delivery_city: Mapped[str | None] = mapped_column(String(100), nullable=True)
     total: Mapped[float] = mapped_column(Float)
-    status: Mapped[str] = mapped_column(String(50), default="completed")
+    cashback_used: Mapped[float] = mapped_column(Float, default=0.0)
+    cashback_earned: Mapped[float] = mapped_column(Float, default=0.0)
+    status: Mapped[str] = mapped_column(String(50), default="pending")
     payment_ref: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     user: Mapped["User"] = relationship("User", back_populates="orders")
+    branch: Mapped["Branch | None"] = relationship("Branch")
     items: Mapped[list["OrderItem"]] = relationship("OrderItem", back_populates="order")
+    cashback_transactions: Mapped[list["CashbackTransaction"]] = relationship("CashbackTransaction", back_populates="order")
 
 
 class OrderItem(Base):
@@ -65,3 +101,18 @@ class OrderItem(Base):
 
     order: Mapped["Order"] = relationship("Order", back_populates="items")
     product: Mapped["Product"] = relationship("Product", back_populates="order_items")
+
+
+class CashbackTransaction(Base):
+    __tablename__ = "cashback_transactions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    order_id: Mapped[int | None] = mapped_column(ForeignKey("orders.id"), nullable=True)
+    amount: Mapped[float] = mapped_column(Float)   # positive = earned, negative = used
+    type: Mapped[str] = mapped_column(String(20))  # "earned" | "used"
+    description: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    user: Mapped["User"] = relationship("User", back_populates="cashback_transactions")
+    order: Mapped["Order | None"] = relationship("Order", back_populates="cashback_transactions")

@@ -14,8 +14,10 @@ class UserOut(BaseModel):
     name: str
     email: str
     is_admin: bool
+    is_employee: bool
+    branch_id: Optional[int]
+    cashback_balance: float
     created_at: datetime
-
     model_config = {"from_attributes": True}
 
 
@@ -24,6 +26,32 @@ class Token(BaseModel):
     token_type: str
 
 
+# ── Branch ────────────────────────────────────────────────────────
+class BranchCreate(BaseModel):
+    name: str
+    city: str
+    address: str
+    phone: Optional[str] = None
+
+
+class BranchOut(BaseModel):
+    id: int
+    name: str
+    city: str
+    address: str
+    phone: Optional[str]
+    is_active: bool
+    model_config = {"from_attributes": True}
+
+
+class BranchStockOut(BaseModel):
+    product_id: int
+    product_name: str
+    quantity: int
+    model_config = {"from_attributes": True}
+
+
+# ── Product ───────────────────────────────────────────────────────
 class ProductCreate(BaseModel):
     name: str
     description: str
@@ -46,10 +74,10 @@ class ProductOut(BaseModel):
     image_url: Optional[str]
     features: Optional[list[str]]
     created_at: datetime
-
     model_config = {"from_attributes": True}
 
 
+# ── Order ─────────────────────────────────────────────────────────
 class OrderItemCreate(BaseModel):
     product_id: int
     quantity: int = 1
@@ -64,6 +92,8 @@ class OrderCreate(BaseModel):
     items: list[OrderItemCreate]
     billing_email: EmailStr
     billing_name: str
+    delivery_city: Optional[str] = None
+    use_cashback: bool = False
     payment: PaymentInfo
 
 
@@ -75,7 +105,6 @@ class OrderItemOut(BaseModel):
     unit_price: float
     is_digital: bool
     download_token: Optional[str]
-
     model_config = {"from_attributes": True}
 
 
@@ -83,15 +112,41 @@ class OrderOut(BaseModel):
     id: int
     billing_name: str
     billing_email: str
+    delivery_city: Optional[str]
     total: float
+    cashback_used: float
+    cashback_earned: float
     status: str
     payment_ref: Optional[str]
+    branch_id: Optional[int]
     created_at: datetime
     items: list[OrderItemOut]
-
     model_config = {"from_attributes": True}
 
 
+# ── Cashback ──────────────────────────────────────────────────────
+class CashbackTransactionOut(BaseModel):
+    id: int
+    amount: float
+    type: str
+    description: str
+    created_at: datetime
+    model_config = {"from_attributes": True}
+
+
+# ── Delivery ──────────────────────────────────────────────────────
+class DeliveryEstimate(BaseModel):
+    city: str
+    is_digital: bool
+    in_stock: bool
+    stock_qty: int
+    delivery_days: int
+    delivery_date: str
+    branch_city: str
+    message: str
+
+
+# ── Admin stats ───────────────────────────────────────────────────
 class AdminStats(BaseModel):
     revenue: float
     orders: int

@@ -1,6 +1,6 @@
 import os
-from datetime import datetime, timedelta
 import bcrypt
+from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -53,4 +53,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 def get_admin_user(current_user: models.User = Depends(get_current_user)) -> models.User:
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
+    return current_user
+
+
+def get_employee_user(current_user: models.User = Depends(get_current_user)) -> models.User:
+    if not (current_user.is_employee or current_user.is_admin):
+        raise HTTPException(status_code=403, detail="Employee access required")
     return current_user

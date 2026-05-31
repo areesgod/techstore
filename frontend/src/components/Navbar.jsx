@@ -29,6 +29,9 @@ export default function Navbar() {
           {/* Nav links */}
           <div className="hidden md:flex items-center gap-4 shrink-0">
             <Link to="/products" className="text-gray-600 hover:text-primary-600 font-medium text-sm">{t('nav.products')}</Link>
+            {user?.is_employee && !user?.is_admin && (
+              <Link to="/employee" className="text-amber-600 hover:text-amber-700 font-medium text-sm">Портал</Link>
+            )}
             {user?.is_admin && (
               <Link to="/admin" className="text-gray-600 hover:text-primary-600 font-medium text-sm">{t('nav.admin')}</Link>
             )}
