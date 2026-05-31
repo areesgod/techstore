@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: techstore-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: techstore-db
+          property: connectionString
+
+databases:
+  - name: techstore-db
+    plan: free
