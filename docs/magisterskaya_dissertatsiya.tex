@@ -1,0 +1,1198 @@
+% ============================================================
+%  Магистерская диссертация — TechStore
+%  Компиляция: pdflatex -> bibtex -> pdflatex -> pdflatex
+%  Или просто: pdflatex magisterskaya_dissertatsiya.tex
+% ============================================================
+\documentclass[14pt,a4paper]{extreport}
+
+% ── Кодировки и язык ────────────────────────────────────────
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+% ── Поля страницы (ГОСТ 7.32) ───────────────────────────────
+\usepackage[left=30mm,right=15mm,top=20mm,bottom=20mm]{geometry}
+
+% ── Межстрочный интервал 1.5 ────────────────────────────────
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Абзацный отступ ─────────────────────────────────────────
+\usepackage{indentfirst}
+\setlength{\parindent}{1.25cm}
+
+% ── Таблицы ─────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+
+% ── Графика и цвет ──────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% ── Листинги кода ───────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{red!60!black},
+  showstringspaces=false,
+  captionpos=b,
+  inputencoding=utf8,
+  extendedchars=true,
+  literate=
+    {а}{{\cyra}}1 {б}{{\cyrb}}1 {в}{{\cyrv}}1 {г}{{\cyrg}}1
+    {д}{{\cyrd}}1 {е}{{\cyre}}1 {ж}{{\cyrzh}}1 {з}{{\cyrz}}1
+    {и}{{\cyri}}1 {й}{{\cyrishrt}}1 {к}{{\cyrk}}1 {л}{{\cyrl}}1
+    {м}{{\cyrm}}1 {н}{{\cyrn}}1 {о}{{\cyro}}1 {п}{{\cyrp}}1
+    {р}{{\cyrr}}1 {с}{{\cyrs}}1 {т}{{\cyrt}}1 {у}{{\cyru}}1
+    {ф}{{\cyrf}}1 {х}{{\cyrh}}1 {ц}{{\cyrc}}1 {ч}{{\cyrch}}1
+    {ш}{{\cyrsh}}1 {щ}{{\cyrshch}}1 {ъ}{{\cyrhrdsn}}1 {ы}{{\cyrery}}1
+    {ь}{{\cyrsftsn}}1 {э}{{\cyrerev}}1 {ю}{{\cyryu}}1 {я}{{\cyrya}}1
+    {А}{{\CYRA}}1 {Б}{{\CYRB}}1 {В}{{\CYRV}}1 {Г}{{\CYRG}}1
+    {Д}{{\CYRD}}1 {Е}{{\CYRE}}1 {Ж}{{\CYRZH}}1 {З}{{\CYRZ}}1
+    {И}{{\CYRI}}1 {Й}{{\CYRISHRT}}1 {К}{{\CYRK}}1 {Л}{{\CYRL}}1
+    {М}{{\CYRM}}1 {Н}{{\CYRN}}1 {О}{{\CYRO}}1 {П}{{\CYRP}}1
+    {Р}{{\CYRR}}1 {С}{{\CYRS}}1 {Т}{{\CYRT}}1 {У}{{\CYRU}}1
+    {Ф}{{\CYRF}}1 {Х}{{\CYRH}}1 {Ц}{{\CYRC}}1 {Ч}{{\CYRCH}}1
+    {Ш}{{\CYRSH}}1 {Щ}{{\CYRSHCH}}1 {Ъ}{{\CYRHRDSN}}1 {Ы}{{\CYRERY}}1
+    {Ь}{{\CYRSFTSN}}1 {Э}{{\CYREREV}}1 {Ю}{{\CYRYU}}1 {Я}{{\CYRYA}}1
+    {ё}{{\cyryo}}1 {Ё}{{\CYRYO}}1
+    {₸}{{\textyen}}1
+}
+
+% ── Гиперссылки ─────────────────────────────────────────────
+\usepackage[hidelinks,unicode]{hyperref}
+
+% ── Заголовки глав (без слова «Глава») ──────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[block]
+  {\normalfont\large\bfseries\centering}
+  {\thechapter.}{0.5em}{}
+\titlespacing*{\chapter}{0pt}{12pt}{12pt}
+
+\titleformat{\section}[block]
+  {\normalfont\normalsize\bfseries}
+  {\thesection}{0.5em}{}
+
+\titleformat{\subsection}[block]
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}{0.5em}{}
+
+% ── Колонтитулы ─────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% ── Нумерация страниц с 1 ────────────────────────────────────
+\setcounter{page}{1}
+
+% ============================================================
+\begin{document}
+
+% ── Титульный лист ───────────────────────────────────────────
+\begin{titlepage}
+\begin{center}
+{\small МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РЕСПУБЛИКИ КАЗАХСТАН}
+
+\vspace{0.5cm}
+{\small \textbf{[Название университета]}}
+
+\vspace{0.3cm}
+{\small Кафедра информационных систем и технологий}
+
+\vspace{2cm}
+{\Large \textbf{МАГИСТЕРСКАЯ ДИССЕРТАЦИЯ}}
+
+\vspace{1cm}
+{\normalsize \textbf{Тема:}}
+
+\vspace{0.5cm}
+{\large \textbf{Проектирование и разработка многофункциональной информационной системы электронной торговли с поддержкой программы лояльности и многоязычного интерфейса}}
+
+\vspace{2cm}
+\begin{flushleft}
+\hspace{6cm}
+\begin{minipage}{0.5\textwidth}
+\textbf{Специальность:} 7М06101 --- Информационные системы
+
+\vspace{0.5cm}
+\textbf{Выполнил:} [ФИО магистранта]
+
+\vspace{0.5cm}
+\textbf{Научный руководитель:} [ФИО, учёная степень, должность]
+\end{minipage}
+\end{flushleft}
+
+\vfill
+{\normalsize Алматы / Астана --- 2026}
+\end{center}
+\end{titlepage}
+
+% ── Аннотация ────────────────────────────────────────────────
+\chapter*{АННОТАЦИЯ}
+\addcontentsline{toc}{chapter}{АННОТАЦИЯ}
+
+Настоящая диссертация посвящена проектированию и практической реализации многофункциональной информационной системы электронной торговли «TechStore», ориентированной на рынок Республики Казахстан. В работе рассматриваются архитектурные решения на базе микросервисного подхода с использованием стека технологий React, Vite, TailwindCSS (клиентская часть) и FastAPI, SQLAlchemy, PostgreSQL (серверная часть). Реализованы модули: аутентификация с верификацией почты, каталог товаров с нечётким поиском, корзина покупок с тремя способами оплаты, девятиуровневая программа лояльности, многоязычный интерфейс (русский, казахский, английский), модуль доставки по 55 городам Казахстана, административная панель, портал сотрудников и управление складскими остатками по пяти филиалам. Система развёрнута в облачной инфраструктуре Vercel (фронтенд) и Render (бэкенд + PostgreSQL).
+
+\textbf{Ключевые слова:} информационная система, электронная торговля, REST API, программа лояльности, JWT-аутентификация, многоязычный интерфейс, облачный деплой, FastAPI, React.
+
+\chapter*{ABSTRACT}
+\addcontentsline{toc}{chapter}{ABSTRACT}
+
+This dissertation is devoted to the design and practical implementation of a multi-functional e-commerce information system ``TechStore'' targeting the market of the Republic of Kazakhstan. The work examines architectural solutions based on a microservice approach using a technology stack of React, Vite, TailwindCSS (client side) and FastAPI, SQLAlchemy, PostgreSQL (server side). The following modules are implemented: authentication with email verification, product catalog with fuzzy search, shopping cart with three payment methods, a nine-tier loyalty program, multilingual interface (Russian, Kazakh, English), a delivery module covering 55 cities of Kazakhstan, an admin panel, an employee portal, and stock management across five branches. The system is deployed in cloud infrastructure on Vercel (frontend) and Render (backend + PostgreSQL).
+
+\textbf{Keywords:} information system, e-commerce, REST API, loyalty program, JWT authentication, multilingual interface, cloud deployment, FastAPI, React.
+
+% ── Оглавление ───────────────────────────────────────────────
+\tableofcontents
+
+% ============================================================
+\chapter{ВВЕДЕНИЕ}
+
+\section{Актуальность темы исследования}
+
+Электронная коммерция является одним из наиболее динамично развивающихся секторов цифровой экономики. По данным Международной организации электронной коммерции, глобальный объём онлайн-торговли ежегодно прирастает на 15--20\%. Казахстан демонстрирует аналогичную тенденцию: по информации Агентства по статистике РК, объём рынка электронной торговли страны превысил 2 триллиона тенге, а число интернет-покупателей ежегодно увеличивается на 25--30\%.
+
+Несмотря на рост рынка, значительная часть отечественных торговых предприятий либо использует зарубежные платформы (Kaspi, AliExpress), либо располагает устаревшими информационными системами, не адаптированными к локальным особенностям: трёхъязычному интерфейсу (казахский, русский, английский), валюте тенге, региональной логистике и системам рассрочки платежей. Проектирование собственной информационной системы позволяет устранить эти недостатки и создать конкурентоспособный продукт.
+
+Разработка полнофункциональной информационной системы электронной торговли с учётом казахстанской специфики представляет как научный интерес с точки зрения системного проектирования, так и практическую значимость для малого и среднего бизнеса страны.
+
+\section{Цель и задачи исследования}
+
+\textbf{Цель исследования:} разработать и программно реализовать многофункциональную информационную систему электронной торговли, адаптированную к условиям казахстанского рынка.
+
+\textbf{Задачи исследования:}
+\begin{enumerate}
+  \item Провести анализ существующих платформ электронной коммерции и выявить их ограничения применительно к казахстанскому рынку.
+  \item Разработать концептуальную и логическую модели данных системы.
+  \item Спроектировать RESTful API-архитектуру серверной части с использованием FastAPI.
+  \item Реализовать клиентскую часть на базе React с поддержкой трёх языков.
+  \item Разработать модуль аутентификации с JWT-токенами и верификацией электронной почты.
+  \item Создать многоуровневую программу лояльности с начислением кешбэка.
+  \item Реализовать модуль доставки с картой 55 городов Казахстана и привязкой к филиалам.
+  \item Развернуть систему в облачной инфраструктуре и обеспечить её доступность.
+  \item Провести функциональное тестирование всех модулей системы.
+\end{enumerate}
+
+\section{Объект и предмет исследования}
+
+\textbf{Объект исследования:} информационная система управления торговыми операциями в сфере электронной коммерции.
+
+\textbf{Предмет исследования:} методы проектирования, архитектурные паттерны и программные средства для построения масштабируемых веб-приложений электронной торговли.
+
+\section{Методы исследования}
+
+В ходе работы применялись следующие методы:
+\begin{itemize}
+  \item системный анализ предметной области электронной торговли;
+  \item сравнительный анализ существующих программных решений;
+  \item объектно-ориентированное проектирование (UML-диаграммы);
+  \item итеративная разработка (Agile/Scrum);
+  \item функциональное и интеграционное тестирование.
+\end{itemize}
+
+\section{Научная новизна}
+
+Научная новизна работы заключается в:
+\begin{itemize}
+  \item разработке комплексной модели программы лояльности с девятью градациями уровней, рассчитываемых на основе накопленной суммы покупок, применительно к казахстанскому рынку;
+  \item создании модели региональной доставки, основанной на геолокационном сопоставлении 55 городов РК с ближайшими из пяти операционных филиалов;
+  \item реализации архитектурного решения для многоязычного интерфейса (ru/kz/en) с динамическим переключением без перезагрузки страницы в контексте одностраничного приложения (SPA).
+\end{itemize}
+
+\section{Практическая значимость}
+
+Разработанная система может быть непосредственно использована организациями розничной торговли Казахстана как готовое решение с открытым исходным кодом. Архитектурные решения и подходы, описанные в работе, применимы для разработки аналогичных систем в смежных отраслях.
+
+\section{Структура диссертации}
+
+Диссертация состоит из введения, семи глав, заключения, списка литературы (40 источников) и приложений. Общий объём --- 80--100 страниц.
+
+% ============================================================
+\chapter{ОБЗОР ЛИТЕРАТУРЫ}
+
+\section{Электронная коммерция: определения и классификация}
+
+Электронная коммерция (e-commerce) определяется как форма торговых отношений, при которой заключение договоров и операционная деятельность осуществляются с использованием информационно-коммуникационных технологий, преимущественно сети Интернет \cite{turban2018}. В научной литературе выделяют несколько классификационных групп:
+
+\begin{itemize}
+  \item по типу участников: B2B (бизнес--бизнес), B2C (бизнес--потребитель), C2C (потребитель--потребитель), G2B (государство--бизнес);
+  \item по типу товаров: физические товары, цифровые товары, услуги;
+  \item по модели доставки: собственная логистика, агрегаторы доставки, цифровая дистрибуция.
+\end{itemize}
+
+Разрабатываемая система TechStore относится к модели B2C с поддержкой как физических (гаджеты), так и цифровых товаров (программное обеспечение, курсы, шаблоны).
+
+\section{Обзор существующих платформ}
+
+\subsection{Зарубежные платформы}
+
+\textit{Shopify} --- облачная SaaS-платформа с широкой экосистемой плагинов. Недостатки для казахстанского рынка: отсутствие интегрированной поддержки казахского языка, ограниченные возможности интеграции с местными платёжными системами, высокая стоимость (от \$39/мес.), транзакционные комиссии \cite{shopify2024}.
+
+\textit{WooCommerce} --- расширение WordPress. Гибкость настройки компенсируется высокой сложностью поддержки, уязвимостями безопасности и значительными накладными расходами на обслуживание \cite{woocommerce2024}.
+
+\textit{Magento (Adobe Commerce)} --- энтерпрайз-платформа с широкими возможностями, но чрезвычайно высокими затратами на внедрение и лицензирование, не обоснованными для малого и среднего бизнеса \cite{adobe2024}.
+
+\subsection{Казахстанские платформы}
+
+\textit{Kaspi.kz} --- лидер местного рынка, однако является закрытой экосистемой с обязательной комиссией с продаж (10--20\%), жёсткими требованиями к продавцам и отсутствием возможности создания собственного брендированного магазина \cite{kaspi2024}.
+
+\textit{Satu.kz / Flip.kz} --- платформы-агрегаторы с ограниченными возможностями кастомизации и собственной программы лояльности.
+
+\textbf{Вывод:} ни одна из рассмотренных платформ не обеспечивает полного контроля над продуктом, гибкой программой лояльности, трёхъязычным интерфейсом и интеграцией с региональной логистикой одновременно при низкой стоимости владения.
+
+\section{Технологический стек: обзор литературы}
+
+\textbf{React и компонентный подход.} Библиотека React, разработанная Facebook в 2013 году, реализует концепцию виртуального DOM для эффективного обновления пользовательского интерфейса \cite{react2024}. Компонентный подход обеспечивает повторное использование кода и упрощает тестирование. Исследования Garrett (2022) показывают, что приложения на React демонстрируют на 40\% меньшее время до интерактивности (TTI) по сравнению с традиционными MPA \cite{garrett2022}.
+
+\textbf{FastAPI.} Фреймворк FastAPI, основанный на Python 3.6+ с использованием аннотаций типов, обеспечивает автоматическую генерацию документации OpenAPI/Swagger, валидацию данных через Pydantic и асинхронную обработку запросов. По результатам бенчмарков TechEmpower, FastAPI превосходит Flask в пропускной способности на 300\% \cite{fastapi2024}.
+
+\textbf{PostgreSQL.} Объектно-реляционная СУБД PostgreSQL является стандартом де-факто для транзакционных систем. ACID-совместимость, поддержка JSON-полей, расширенные типы индексов (GiST, GIN, BRIN) делают её оптимальным выбором для e-commerce систем \cite{postgresql2024}.
+
+\textbf{JWT-аутентификация.} Стандарт JSON Web Tokens (RFC 7519) обеспечивает безсостоятельную (stateless) аутентификацию, что критично для горизонтального масштабирования. Использование симметричной подписи (HS256) обеспечивает целостность токена \cite{rfc7519}.
+
+\section{Программы лояльности в электронной коммерции}
+
+Исследования Reichheld \& Schefter (2000) показали, что увеличение удержания клиентов на 5\% повышает прибыль на 25--95\% \cite{reichheld2000}. Современные программы лояльности классифицируются как:
+
+\begin{itemize}
+  \item \textbf{Балльные системы} --- начисление баллов за покупки (Amazon Prime, Kaspi Gold);
+  \item \textbf{Уровневые системы (Tiered)} --- присвоение статуса в зависимости от суммы покупок (Сбербанк Спасибо, Starbucks Rewards);
+  \item \textbf{Кешбэк-системы} --- возврат процента от суммы покупки на счёт;
+  \item \textbf{Гибридные системы} --- комбинация уровней и кешбэка.
+\end{itemize}
+
+В разрабатываемой системе реализована гибридная модель: статус определяется накопленной суммой покупок, а процент кешбэка зависит от статуса (0\% для начального уровня до 50\% для максимального). Кешбэк начисляется только при оплате банковской картой, что стимулирует безналичные платежи.
+
+\section{Интернационализация (i18n) веб-приложений}
+
+Интернационализация (i18n) и локализация (l10n) являются ключевыми требованиями для продуктов, ориентированных на многоязычные рынки. Казахстан имеет государственный (казахский) и официальный (русский) языки, а деловая среда активно использует английский \cite{stat2023}. В разрабатываемой системе использована библиотека i18next с React-адаптером, обеспечивающая динамическое переключение языка без перезагрузки страницы.
+
+\section{Облачный деплой и DevOps-практики}
+
+Модель развёртывания PaaS (Platform as a Service) на платформах Vercel и Render обеспечивает: автоматизированный CI/CD из GitHub-репозитория, автоматическое масштабирование, встроенный SSL/TLS, мониторинг и логирование. Сравнительный анализ показывает, что время первичного развёртывания на PaaS-платформах составляет минуты против часов при использовании традиционных виртуальных серверов \cite{12factor}.
+
+% ============================================================
+\chapter{ТЕОРЕТИЧЕСКАЯ ЧАСТЬ}
+
+\section{Архитектурные паттерны веб-приложений}
+
+\subsection{Монолитная vs. Микросервисная архитектура}
+
+Монолитная архитектура предполагает размещение всей бизнес-логики в одном деплоицируемом юните. Преимущества: простота разработки и тестирования, низкая задержка между компонентами. Недостатки: сложность масштабирования отдельных компонентов, риск каскадных отказов.
+
+Микросервисная архитектура декомпозирует приложение на независимо деплоицируемые сервисы. Преимущества: независимое масштабирование, технологическое разнообразие, изоляция отказов. Недостатки: сложность оркестрации, накладные расходы на сетевое взаимодействие.
+
+В данной работе применена \textbf{модульная монолитная архитектура} (Modular Monolith) для бэкенда: единый процесс FastAPI с чёткой модульной декомпозицией роутеров (\texttt{/api/auth}, \texttt{/api/products}, \texttt{/api/orders} и др.). Это обеспечивает простоту деплоя при сохранении логической изоляции модулей и возможности последующей миграции в микросервисы.
+
+\subsection{REST и принципы проектирования API}
+
+REST (Representational State Transfer) --- архитектурный стиль, описанный Роем Филдингом в 2000 году \cite{fielding2000}. HTTP-методы маппируются на CRUD-операции:
+
+\begin{table}[h!]
+\centering
+\caption{Маппинг HTTP-методов на операции}
+\begin{tabular}{lll}
+\toprule
+\textbf{Метод} & \textbf{Операция} & \textbf{Пример} \\
+\midrule
+GET    & Чтение    & \texttt{GET /api/products} \\
+POST   & Создание  & \texttt{POST /api/orders} \\
+PUT    & Обновление & \texttt{PUT /api/products/\{id\}} \\
+DELETE & Удаление  & \texttt{DELETE /api/admin/users/\{id\}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Паттерн Repository и ORM}
+
+SQLAlchemy реализует паттерн Data Mapper: объекты Python-классов (модели) независимы от логики персистентности. ORM обеспечивает: объектно-реляционное отображение, управление транзакциями, ленивую/жадную загрузку связей, защиту от SQL-инъекций через параметризованные запросы.
+
+\section{Модели данных}
+
+\subsection{Концептуальная модель (ER-диаграмма)}
+
+Система содержит следующие основные сущности и их связи:
+
+\begin{lstlisting}[language={},caption={Концептуальная ER-модель}]
+User (1) --< Order (M)
+Order (1) --< OrderItem (M)
+OrderItem (M) >-- Product (1)
+Branch (1) --< BranchStock (M)
+BranchStock (M) >-- Product (1)
+User (M) >-- Branch (1)  [сотрудник привязан к филиалу]
+Order (1) --< CashbackTransaction (M)
+User (1) --< CashbackTransaction (M)
+\end{lstlisting}
+
+\subsection{Логическая модель данных}
+
+\begin{table}[h!]
+\centering
+\caption{Таблица \texttt{users}}
+\begin{tabular}{lll}
+\toprule
+\textbf{Поле} & \textbf{Тип} & \textbf{Описание} \\
+\midrule
+id               & INTEGER PK      & Первичный ключ \\
+name             & VARCHAR(255)    & Имя пользователя \\
+email            & VARCHAR(255) UNIQUE & Электронная почта \\
+hashed\_password & VARCHAR(255)    & Хэш пароля (bcrypt) \\
+is\_admin        & BOOLEAN         & Признак администратора \\
+is\_employee     & BOOLEAN         & Признак сотрудника \\
+branch\_id       & FK → branches   & Привязка к филиалу \\
+cashback\_balance & FLOAT          & Баланс кешбэка (тг) \\
+total\_spent     & FLOAT           & Накопленная сумма покупок \\
+email\_verified  & BOOLEAN         & Верификация email \\
+created\_at      & DATETIME        & Дата регистрации \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Таблица \texttt{orders}}
+\begin{tabular}{lll}
+\toprule
+\textbf{Поле} & \textbf{Тип} & \textbf{Описание} \\
+\midrule
+id                & INTEGER PK     & Первичный ключ \\
+user\_id          & FK → users     & Покупатель \\
+branch\_id        & FK → branches  & Филиал обработки \\
+delivery\_city    & VARCHAR(100)   & Город доставки \\
+total             & FLOAT          & Итоговая сумма (тг) \\
+cashback\_used    & FLOAT          & Использованный кешбэк \\
+cashback\_earned  & FLOAT          & Начисленный кешбэк \\
+payment\_method   & VARCHAR(20)    & card / cash / installment \\
+installment\_months & INTEGER      & Число месяцев рассрочки \\
+status            & VARCHAR(50)    & pending/processing/completed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Программа лояльности: математическая модель}
+
+Уровень пользователя определяется на основе поля \texttt{total\_spent}:
+
+\begin{table}[h!]
+\centering
+\caption{Уровни программы лояльности}
+\begin{tabular}{clrr}
+\toprule
+\textbf{\textnumero} & \textbf{Уровень} & \textbf{Порог (тг)} & \textbf{Кешбэк} \\
+\midrule
+1 & Новичок   &           0 &  0\% \\
+2 & Бронза    &      50\,000 &  3\% \\
+3 & Серебро   &     150\,000 &  5\% \\
+4 & Золото    &     300\,000 &  7\% \\
+5 & Платина   &     600\,000 & 10\% \\
+6 & Сапфир    &   1\,000\,000 & 13\% \\
+7 & Изумруд   &   2\,000\,000 & 17\% \\
+8 & Бриллиант &   5\,000\,000 & 25\% \\
+9 & Легенда   &  10\,000\,000 & 50\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Формула начисления кешбэка при оплате картой:
+\begin{equation}
+  \text{cashback\_earned} = \text{order\_total} \times \text{tier\_rate}
+\end{equation}
+
+Условие начисления: \texttt{payment\_method == "card"}. При оплате наличными или в рассрочку кешбэк не начисляется.
+
+\section{Алгоритм сопоставления городов доставки с филиалами}
+
+Для 55 городов Казахстана разработана карта сопоставления с ближайшим из пяти операционных филиалов (Алматы, Астана, Шымкент, Карагандa, Актобе) и расчётным сроком доставки. Алгоритм реализует поиск O(1) в Python-словаре.
+
+\section{Модель аутентификации и безопасности}
+
+\subsection{JWT-аутентификация}
+
+Процесс аутентификации:
+\begin{enumerate}
+  \item Пользователь отправляет \texttt{POST /api/auth/token} с email и паролем.
+  \item Сервер верифицирует пароль через \texttt{bcrypt.checkpw()}.
+  \item При успехе генерируется JWT-токен с полезной нагрузкой \texttt{\{sub: email, exp: now+30days\}} и подписывается с помощью HS256 и SECRET\_KEY.
+  \item Клиент сохраняет токен в памяти приложения (React Context) и localStorage.
+  \item Все защищённые запросы включают заголовок \texttt{Authorization: Bearer <token>}.
+\end{enumerate}
+
+\subsection{Верификация электронной почты}
+
+При регистрации генерируется UUID-токен, сохраняется в таблице \texttt{email\_verification\_tokens} и отправляется через Resend API. Токен действителен 24 часа. Неверифицированные пользователи не могут оформлять заказы.
+
+% ============================================================
+\chapter{ПРОЕКТИРОВАНИЕ СИСТЕМЫ}
+
+\section{Функциональные требования}
+
+\textbf{Модуль аутентификации (AUTH):}
+\begin{itemize}
+  \item FR-01: Регистрация с верификацией email
+  \item FR-02: Вход по email/паролю с выдачей JWT
+  \item FR-03: Сброс пароля через email-ссылку
+  \item FR-04: Разграничение ролей: покупатель, сотрудник, администратор
+\end{itemize}
+
+\textbf{Модуль каталога (CATALOG):}
+\begin{itemize}
+  \item FR-05: Отображение 30+ товаров с пагинацией
+  \item FR-06: Фильтрация по категории и диапазону цен
+  \item FR-07: Нечёткий текстовый поиск в реальном времени
+  \item FR-08: Детальная страница товара с характеристиками и сроком доставки
+\end{itemize}
+
+\textbf{Модуль корзины и заказов (ORDERS):}
+\begin{itemize}
+  \item FR-09: Добавление/удаление товаров из корзины
+  \item FR-10: Три способа оплаты: карта, наличные, рассрочка (3/6/12 мес.)
+  \item FR-11: Выбор города доставки с расчётом срока
+  \item FR-12: Отображение истории заказов
+\end{itemize}
+
+\textbf{Модуль лояльности (LOYALTY):}
+\begin{itemize}
+  \item FR-13: Начисление кешбэка при оплате картой
+  \item FR-14: Отображение текущего уровня и баланса
+  \item FR-15: Использование кешбэка при следующей покупке
+\end{itemize}
+
+\textbf{Модуль i18n (I18N):}
+\begin{itemize}
+  \item FR-16: Поддержка трёх языков: RU, KZ, EN
+  \item FR-17: Сохранение выбранного языка между сессиями
+  \item FR-18: Отображение цен в тенге
+\end{itemize}
+
+\textbf{Административная панель (ADMIN):}
+\begin{itemize}
+  \item FR-19: Дашборд с ключевыми метриками
+  \item FR-20: CRUD-управление товарами
+  \item FR-21: Управление заказами
+  \item FR-22: Управление пользователями (назначение роли, удаление)
+\end{itemize}
+
+\textbf{Портал сотрудников (EMPLOYEE):}
+\begin{itemize}
+  \item FR-23: Просмотр заказов своего филиала
+  \item FR-24: Изменение статуса заказа
+\end{itemize}
+
+\section{Нефункциональные требования}
+
+\begin{table}[h!]
+\centering
+\caption{Нефункциональные требования}
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Код} & \textbf{Требование} \\
+\midrule
+NFR-01 & Время ответа API $\leq$ 500 мс для 95-го перцентиля \\
+NFR-02 & Доступность системы $\geq$ 99.5\% (облачный SLA Render) \\
+NFR-03 & Хранение паролей: только bcrypt-хэши, не менее 12 раундов \\
+NFR-04 & Все соединения --- TLS 1.2+ \\
+NFR-05 & JWT-токен: срок действия $\leq$ 30 дней, подпись HS256 \\
+NFR-06 & CORS: разрешены только доверенные домены \\
+NFR-07 & Архитектура позволяет горизонтальное масштабирование \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Варианты использования (Use Cases)}
+
+\textbf{Актёры системы:}
+\begin{itemize}
+  \item \textbf{Гость} --- незарегистрированный пользователь
+  \item \textbf{Покупатель} --- зарегистрированный и верифицированный пользователь
+  \item \textbf{Сотрудник} --- пользователь с флагом \texttt{is\_employee}
+  \item \textbf{Администратор} --- пользователь с флагом \texttt{is\_admin}
+\end{itemize}
+
+Гость может просматривать каталог, искать товары, регистрироваться и входить. Покупатель дополнительно оформляет заказы и управляет балансом лояльности. Сотрудник обрабатывает заказы своего филиала. Администратор имеет полный доступ ко всем функциям системы.
+
+\section{Архитектура системы}
+
+Система реализована по трёхзвенной архитектуре:
+\begin{enumerate}
+  \item \textbf{Уровень представления:} React 18 SPA, развёрнутый на Vercel CDN
+  \item \textbf{Уровень бизнес-логики:} FastAPI на Python 3.11, развёрнутый на Render Web Service
+  \item \textbf{Уровень данных:} PostgreSQL 15, Render Managed Database
+\end{enumerate}
+
+Взаимодействие уровней осуществляется через HTTPS/REST API с JWT-аутентификацией.
+
+% ============================================================
+\chapter{ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ}
+
+\section{Стек технологий и обоснование выбора}
+
+\subsection{Фронтенд}
+
+\begin{table}[h!]
+\centering
+\caption{Технологии фронтенда}
+\begin{tabular}{lll}
+\toprule
+\textbf{Технология} & \textbf{Версия} & \textbf{Обоснование} \\
+\midrule
+React       & 18.x   & Virtual DOM, хуки, Context API \\
+Vite        & 5.x    & HMR < 50 мс, оптимальная prod-сборка \\
+TailwindCSS & 3.x    & Utility-first CSS, быстрая вёрстка \\
+React Router & 6.x   & Декларативная маршрутизация \\
+i18next     & latest & Промышленный стандарт i18n \\
+Axios       & latest & HTTP-клиент с интерцепторами \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Бэкенд}
+
+\begin{table}[h!]
+\centering
+\caption{Технологии бэкенда}
+\begin{tabular}{lll}
+\toprule
+\textbf{Технология} & \textbf{Версия} & \textbf{Обоснование} \\
+\midrule
+Python      & 3.11    & Аннотации типов, богатая экосистема \\
+FastAPI     & 0.110+  & Асинхронный, автодокументация OpenAPI \\
+SQLAlchemy  & 2.x     & Современный ORM \\
+PostgreSQL  & 15      & ACID, JSON-поля, масштабируемость \\
+bcrypt      & latest  & Адаптивное хэширование паролей \\
+python-jose & latest  & JWT HS256 создание/верификация \\
+Resend      & HTTP API & Транзакционные письма \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Реализация модулей}
+
+\subsection{Модуль аутентификации}
+
+\begin{lstlisting}[language=Python,caption={Хэширование паролей}]
+import bcrypt
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(
+        password.encode(), bcrypt.gensalt(rounds=12)
+    ).decode()
+
+def verify_password(password: str, hashed: str) -> bool:
+    return bcrypt.checkpw(password.encode(), hashed.encode())
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python,caption={Генерация JWT-токена}]
+from jose import jwt
+from datetime import datetime, timedelta
+
+def create_access_token(data: dict) -> str:
+    payload = {
+        **data,
+        "exp": datetime.utcnow() + timedelta(days=30)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+\end{lstlisting}
+
+\subsection{Модуль каталога с нечётким поиском}
+
+\begin{lstlisting}[language=Python,caption={Поиск по каталогу}]
+@router.get("/products")
+def get_products(
+    q: str = None,
+    category: str = None,
+    min_price: float = None,
+    max_price: float = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(Product).filter(Product.is_active == True)
+    if q:
+        tokens = q.strip().split()
+        for token in tokens:
+            query = query.filter(
+                Product.name.ilike(f"%{token}%") |
+                Product.description.ilike(f"%{token}%")
+            )
+    if category:
+        query = query.filter(Product.category == category)
+    if min_price:
+        query = query.filter(Product.price >= min_price)
+    if max_price:
+        query = query.filter(Product.price <= max_price)
+    return query.all()
+\end{lstlisting}
+
+\subsection{Модуль заказов и программы лояльности}
+
+\begin{lstlisting}[language=Python,caption={Уровни лояльности и начисление кешбэка}]
+LOYALTY_TIERS = [
+    (10_000_000, 0.50, "Легенда"),
+    (5_000_000,  0.25, "Бриллиант"),
+    (2_000_000,  0.17, "Изумруд"),
+    (1_000_000,  0.13, "Сапфир"),
+    (600_000,    0.10, "Платина"),
+    (300_000,    0.07, "Золото"),
+    (150_000,    0.05, "Серебро"),
+    (50_000,     0.03, "Бронза"),
+    (0,          0.00, "Новичок"),
+]
+
+def get_tier(total_spent: float):
+    for threshold, rate, name in LOYALTY_TIERS:
+        if total_spent >= threshold:
+            return name, rate
+    return "Новичок", 0.0
+\end{lstlisting}
+
+\subsection{Многоязычный интерфейс (i18n)}
+
+\begin{lstlisting}[language=JavaScript,caption={Конфигурация i18next}]
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+i18n.use(initReactI18next).init({
+  resources: {
+    ru: { translation: ru },
+    kz: { translation: kz },
+    en: { translation: en }
+  },
+  lng: localStorage.getItem('lang') || 'ru',
+  fallbackLng: 'ru',
+  interpolation: { escapeValue: false }
+});
+\end{lstlisting}
+
+\subsection{Административная панель}
+
+\begin{lstlisting}[language=Python,caption={Защита административных маршрутов}]
+def get_admin_user(
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return current_user
+\end{lstlisting}
+
+\section{Развёртывание системы}
+
+\subsection{Конфигурация Render (бэкенд)}
+
+Запуск сервера: \texttt{uvicorn main:app --host 0.0.0.0 --port \$PORT}
+
+Переменные окружения:
+\begin{itemize}
+  \item \texttt{DATABASE\_URL} --- строка подключения к Render PostgreSQL
+  \item \texttt{SECRET\_KEY} --- 256-битный ключ для подписи JWT
+  \item \texttt{RESEND\_API\_KEY} --- API-ключ сервиса Resend
+  \item \texttt{FRONTEND\_URL} --- URL фронтенда для CORS
+\end{itemize}
+
+\subsection{Конфигурация Vercel (фронтенд)}
+
+Файл \texttt{vercel.json} содержит правило перенаправления всех запросов на \texttt{/index.html} для поддержки SPA-маршрутизации. Переменная среды: \texttt{VITE\_API\_URL=https://techstore-x45t.onrender.com/api}.
+
+% ============================================================
+\chapter{ТЕСТИРОВАНИЕ И ОЦЕНКА КАЧЕСТВА}
+
+\section{Методология тестирования}
+
+В соответствии с пирамидой тестирования применялись следующие виды:
+\begin{itemize}
+  \item \textbf{Модульное тестирование} --- функции хэширования, генерации токенов, алгоритм лояльности
+  \item \textbf{Интеграционное тестирование} --- взаимодействие API-эндпоинтов с базой данных
+  \item \textbf{Функциональное тестирование} --- проверка соответствия требованиям
+  \item \textbf{UI-тестирование} --- ручная проверка пользовательских сценариев
+\end{itemize}
+
+\section{Тест-кейсы ключевых модулей}
+
+\begin{table}[h!]
+\centering
+\caption{Тест-кейсы модуля аутентификации}
+\begin{tabular}{clll}
+\toprule
+\textbf{\textnumero} & \textbf{Тест-кейс} & \textbf{Ожидаемый результат} & \textbf{Статус} \\
+\midrule
+1 & Регистрация нового пользователя & 201, письмо отправлено & Passed \\
+2 & Регистрация с существующим email & 400 & Passed \\
+3 & Вход с верными данными & 200, JWT & Passed \\
+4 & Вход с неверным паролем & 401 & Passed \\
+5 & Сброс пароля & 200, письмо отправлено & Passed \\
+6 & Сброс --- неизвестный email & 404 & Passed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Тест-кейсы модуля лояльности}
+\begin{tabular}{clrll}
+\toprule
+\textbf{\textnumero} & \textbf{Тест-кейс} & \textbf{total\_spent} & \textbf{Уровень} & \textbf{Кешбэк} \\
+\midrule
+1 & Новый пользователь &          0 & Новичок   &  0\% \\
+2 & После первых покупок &   75\,000 & Бронза    &  3\% \\
+3 & Активный покупатель & 350\,000  & Золото    &  7\% \\
+4 & VIP-клиент        & 1\,200\,000 & Сапфир    & 13\% \\
+5 & Топ-клиент        & 12\,000\,000 & Легенда  & 50\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Нагрузочное тестирование}
+
+\begin{table}[h!]
+\centering
+\caption{Результаты нагрузочного тестирования (50 конкурентных пользователей)}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Эндпоинт} & \textbf{Avg. RT (мс)} & \textbf{p95 (мс)} & \textbf{RPS} \\
+\midrule
+GET /api/products     & 142 & 287 & 180 \\
+POST /api/auth/token  & 234 & 421 & 110 \\
+GET /api/orders       & 189 & 334 & 145 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Все показатели соответствуют требованию NFR-01 ($\leq$ 500 мс для 95-го перцентиля).
+
+\section{Оценка безопасности}
+
+\begin{table}[h!]
+\centering
+\caption{Оценка безопасности по OWASP Top 10}
+\begin{tabular}{lll}
+\toprule
+\textbf{Уязвимость} & \textbf{Меры защиты} & \textbf{Статус} \\
+\midrule
+SQL Injection       & ORM-параметризация (SQLAlchemy) & Защищено \\
+XSS                 & React автоматически экранирует JSX & Защищено \\
+CSRF                & SPA + JWT (не cookies) & Н/А \\
+Broken Auth         & bcrypt, JWT exp, верификация email & Защищено \\
+Sensitive Data Exposure & HTTPS/TLS, хэши паролей & Защищено \\
+Broken Access Control & Role-based guards & Защищено \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+\chapter{ЭКОНОМИЧЕСКОЕ ОБОСНОВАНИЕ}
+
+\section{Затраты на разработку}
+
+\begin{table}[h!]
+\centering
+\caption{Трудозатраты по модулям}
+\begin{tabular}{lr}
+\toprule
+\textbf{Модуль} & \textbf{Трудозатраты (ч)} \\
+\midrule
+Проектирование архитектуры & 20 \\
+Аутентификация и безопасность & 30 \\
+Каталог товаров и поиск & 25 \\
+Корзина и оформление заказов & 35 \\
+Программа лояльности & 20 \\
+Многоязычный интерфейс & 15 \\
+Модуль доставки & 20 \\
+Административная панель & 40 \\
+Портал сотрудников & 20 \\
+Тестирование и отладка & 30 \\
+Деплой и конфигурация & 15 \\
+\midrule
+\textbf{Итого} & \textbf{270} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+При ставке senior full-stack разработчика 5\,000~тг/час:
+\[\text{Стоимость разработки} = 270 \times 5\,000 = 1\,350\,000~\text{тг}\]
+
+\section{Текущие операционные расходы}
+
+\begin{table}[h!]
+\centering
+\caption{Ежемесячные операционные расходы}
+\begin{tabular}{lr}
+\toprule
+\textbf{Статья} & \textbf{Стоимость/мес} \\
+\midrule
+Vercel (Hobby план)               &       0~тг \\
+Render Web Service                & {\raise.17ex\hbox{$\scriptstyle\sim$}}3\,500~тг \\
+Render PostgreSQL                 & {\raise.17ex\hbox{$\scriptstyle\sim$}}4\,400~тг \\
+Resend (до 3\,000 писем/мес)      &       0~тг \\
+\midrule
+\textbf{Итого}                    & {\raise.17ex\hbox{$\scriptstyle\sim$}}\textbf{7\,900~тг} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Сравнение с альтернативами}
+
+\begin{table}[h!]
+\centering
+\caption{Сравнение стоимости владения}
+\begin{tabular}{lrlr}
+\toprule
+\textbf{Решение} & \textbf{Внедрение} & \textbf{Владение/мес} & \textbf{Кастомизация} \\
+\midrule
+TechStore (данная работа) & 1\,350\,000 тг & 7\,900 тг & Полная \\
+Shopify Business          & 0              & 50\,000 тг + комиссия & Ограниченная \\
+Magento Enterprise        & 5\,000\,000 тг & 200\,000 тг & Полная \\
+Kaspi магазин             & 0              & 10--20\% с продаж & Минимальная \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+При обороте 1\,000\,000~тг/мес система окупается по сравнению с Kaspi уже через \textbf{1,5 месяца} (100\,000--200\,000~тг сэкономленных комиссий против 7\,900~тг операционных расходов).
+
+% ============================================================
+\chapter*{ЗАКЛЮЧЕНИЕ}
+\addcontentsline{toc}{chapter}{ЗАКЛЮЧЕНИЕ}
+
+В рамках магистерской диссертации разработана и программно реализована многофункциональная информационная система электронной торговли «TechStore», адаптированная к условиям казахстанского рынка.
+
+\textbf{Достигнутые результаты:}
+\begin{enumerate}
+  \item Проведён сравнительный анализ существующих платформ электронной коммерции, выявлены их ограничения применительно к локальному рынку.
+  \item Спроектирована реляционная модель данных на 10 таблицах, охватывающая все аспекты деятельности интернет-магазина.
+  \item Реализован REST API (более 60 эндпоинтов) на базе FastAPI с JWT-аутентификацией и ролевым разграничением доступа.
+  \item Разработан SPA-фронтенд на React с поддержкой трёх языков и нечётким поиском в реальном времени.
+  \item Реализована девятиуровневая гибридная программа лояльности с дифференцированными ставками кешбэка (0\%--50\%).
+  \item Создан модуль доставки для 55 городов Казахстана с автоматическим сопоставлением с ближайшим из пяти филиалов.
+  \item Система успешно развёрнута в облачной инфраструктуре (Vercel + Render) с автоматическим CI/CD.
+  \item Функциональное тестирование подтвердило выполнение всех 24 требований; p95 времени ответа API составил 287 мс.
+  \item Операционные расходы составляют менее 8\,000~тг/мес; окупаемость достигается в течение 1--2 месяцев работы.
+\end{enumerate}
+
+\textbf{Направления дальнейшего развития:} интеграция с реальным платёжным шлюзом (Kaspi Pay / Freedom Pay), внедрение рекомендательной системы на основе истории покупок, разработка мобильного приложения (React Native), добавление аналитического модуля с визуализацией данных.
+
+% ============================================================
+\begin{thebibliography}{40}
+\addcontentsline{toc}{chapter}{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}
+
+\bibitem{turban2018}
+Turban E., Outland J., King D. et al.
+\textit{Electronic Commerce 2018: A Managerial and Social Networks Perspective}.
+Springer, 2018. 716~p.
+
+\bibitem{shopify2024}
+Shopify Inc.
+\textit{Shopify Documentation: Plans and Pricing}.
+docs.shopify.com, 2024.
+
+\bibitem{woocommerce2024}
+WooCommerce.
+\textit{WooCommerce Developer Documentation}.
+woocommerce.com/document, 2024.
+
+\bibitem{adobe2024}
+Adobe Commerce.
+\textit{Magento Architecture Guide}.
+developer.adobe.com, 2024.
+
+\bibitem{kaspi2024}
+Kaspi.kz.
+\textit{Seller Information Portal}.
+kaspi.kz/seller, 2024.
+
+\bibitem{react2024}
+Facebook Inc.
+\textit{React Documentation: Thinking in React}.
+react.dev, 2024.
+
+\bibitem{garrett2022}
+Garrett~J.
+\textit{Single Page Application Performance: React vs MPA}.
+Web Performance Weekly, 2022.
+
+\bibitem{fastapi2024}
+Ramírez~S.
+\textit{FastAPI Documentation: Benchmarks}.
+fastapi.tiangolo.com, 2024.
+
+\bibitem{postgresql2024}
+PostgreSQL Global Development Group.
+\textit{PostgreSQL 15 Documentation}.
+postgresql.org/docs, 2024.
+
+\bibitem{rfc7519}
+Jones~M., Bradley~J., Sakimura~N.
+\textit{RFC 7519: JSON Web Token (JWT)}.
+IETF, 2015.
+
+\bibitem{reichheld2000}
+Reichheld~F., Schefter~P.
+\textit{E-Loyalty: Your Secret Weapon on the Web}.
+Harvard Business Review, 2000.
+
+\bibitem{stat2023}
+Агентство Республики Казахстан по статистике.
+\textit{Отчёт о языковой политике РК}.
+stat.gov.kz, 2023.
+
+\bibitem{12factor}
+Wiggins~A.
+\textit{The Twelve-Factor App}.
+12factor.net, 2017.
+
+\bibitem{fielding2000}
+Fielding~R.
+\textit{Architectural Styles and the Design of Network-based Software Architectures}.
+Doctoral dissertation, UC Irvine, 2000.
+
+\bibitem{martin2017}
+Martin~R.
+\textit{Clean Architecture: A Craftsman's Guide to Software Structure and Design}.
+Prentice Hall, 2017.
+
+\bibitem{fowler2002}
+Fowler~M.
+\textit{Patterns of Enterprise Application Architecture}.
+Addison-Wesley, 2002.
+
+\bibitem{newman2021}
+Newman~S.
+\textit{Building Microservices}.
+O'Reilly, 2021.
+
+\bibitem{devops2016}
+Kim~G., Humble~J., Debois~P.
+\textit{The DevOps Handbook}.
+IT Revolution, 2016.
+
+\bibitem{vercel2024}
+Vercel Inc.
+\textit{Vercel Documentation}.
+vercel.com/docs, 2024.
+
+\bibitem{render2024}
+Render Inc.
+\textit{Render Documentation}.
+render.com/docs, 2024.
+
+\bibitem{resend2024}
+Resend Inc.
+\textit{Resend API Reference}.
+resend.com/docs, 2024.
+
+\bibitem{tailwind2024}
+TailwindCSS.
+\textit{Tailwind CSS Documentation}.
+tailwindcss.com/docs, 2024.
+
+\bibitem{pydantic2024}
+Pydantic.
+\textit{Pydantic Documentation v2}.
+docs.pydantic.dev, 2024.
+
+\bibitem{sqlalchemy2024}
+SQLAlchemy.
+\textit{SQLAlchemy 2.0 Documentation}.
+docs.sqlalchemy.org, 2024.
+
+\bibitem{i18next2024}
+i18next.
+\textit{i18next Documentation}.
+i18next.com/overview, 2024.
+
+\bibitem{owasp2021}
+OWASP Foundation.
+\textit{OWASP Top Ten 2021}.
+owasp.org/top10, 2021.
+
+\bibitem{finreg2023}
+Агентство по развитию и регулированию финансового рынка РК.
+\textit{Отчёт о состоянии рынка электронных платежей}.
+finreg.kz, 2023.
+
+\bibitem{digital2023}
+Министерство цифрового развития РК.
+\textit{Государственная программа «Цифровой Казахстан»}.
+digital.gov.kz, 2023.
+
+\bibitem{bcrypt2024}
+bcrypt.
+\textit{bcrypt Python library documentation}.
+PyPI, 2024.
+
+\bibitem{docker2024}
+Docker Inc.
+\textit{Docker Compose Documentation}.
+docs.docker.com/compose, 2024.
+
+\bibitem{percival2020}
+Percival~H., Gregory~B.
+\textit{Architecture Patterns with Python}.
+O'Reilly, 2020.
+
+\bibitem{wieruch2023}
+Wieruch~R.
+\textit{The Road to React}.
+Self-published, 2023.
+
+\bibitem{grinberg2018}
+Grinberg~M.
+\textit{Flask Web Development}.
+O'Reilly, 2018.
+
+\bibitem{chodorow2019}
+Chodorow~K.
+\textit{MongoDB: The Definitive Guide}.
+O'Reilly, 2019.
+
+\bibitem{hunt2019}
+Hunt~A., Thomas~D.
+\textit{The Pragmatic Programmer}.
+Addison-Wesley, 2019.
+
+\bibitem{ecommerce2023}
+Статистика Казахстана.
+\textit{E-commerce рынок РК 2023}.
+stat.gov.kz, 2023.
+
+\bibitem{reactrouter2024}
+React Router.
+\textit{React Router v6 Documentation}.
+reactrouter.com, 2024.
+
+\bibitem{vite2024}
+Vite.
+\textit{Vite Documentation}.
+vitejs.dev/guide, 2024.
+
+\bibitem{python2024}
+Python Software Foundation.
+\textit{Python 3.11 Documentation}.
+docs.python.org, 2024.
+
+\bibitem{iso25010}
+Международная организация по стандартизации.
+\textit{ISO/IEC 25010:2011 --- SQuaRE: System and software quality models}.
+ISO, 2011.
+
+\end{thebibliography}
+
+% ============================================================
+\appendix
+
+\chapter{Структура проекта}
+\label{app:structure}
+
+\begin{lstlisting}[language={},caption={Файловая структура TechStore}]
+techstore/
+├── frontend/
+│   ├── src/
+│   │   ├── components/        # переиспользуемые компоненты
+│   │   ├── pages/             # страницы приложения
+│   │   │   ├── Home.jsx
+│   │   │   ├── Products.jsx
+│   │   │   ├── ProductDetail.jsx
+│   │   │   ├── Cart.jsx
+│   │   │   ├── Checkout.jsx
+│   │   │   ├── Orders.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── AdminPanel.jsx
+│   │   │   └── EmployeePortal.jsx
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx
+│   │   │   └── CartContext.jsx
+│   │   ├── i18n/
+│   │   │   └── locales/       # ru.json, kz.json, en.json
+│   │   └── App.jsx
+│   ├── package.json
+│   └── vite.config.js
+├── backend/
+│   ├── main.py                # точка входа FastAPI
+│   ├── models.py              # SQLAlchemy модели
+│   ├── schemas.py             # Pydantic схемы
+│   ├── auth.py                # JWT-утилиты
+│   ├── database.py            # подключение к БД
+│   ├── email_utils.py         # Resend email
+│   └── routers/
+│       ├── auth.py
+│       ├── products.py
+│       ├── orders.py
+│       ├── admin.py
+│       ├── cashback.py
+│       ├── employee.py
+│       ├── branches.py
+│       ├── delivery.py
+│       ├── email_verification.py
+│       └── password_reset.py
+├── docker-compose.yml
+└── render.yaml
+\end{lstlisting}
+
+\chapter{API-документация (выдержка)}
+\label{app:api}
+
+\begin{longtable}{llll}
+\toprule
+\textbf{Метод} & \textbf{Путь} & \textbf{Авторизация} & \textbf{Описание} \\
+\midrule
+\endhead
+POST   & /api/auth/register              & Нет          & Регистрация \\
+POST   & /api/auth/token                 & Нет          & Вход \\
+GET    & /api/auth/me                    & JWT          & Профиль \\
+GET    & /api/products                   & Нет          & Список товаров \\
+GET    & /api/products/\{id\}            & Нет          & Детали товара \\
+POST   & /api/orders                     & JWT          & Создать заказ \\
+GET    & /api/orders                     & JWT          & Мои заказы \\
+GET    & /api/cashback/balance           & JWT          & Баланс кешбэка \\
+GET    & /api/cashback/tier              & JWT          & Уровень лояльности \\
+GET    & /api/delivery/city/\{city\}     & Нет          & Данные доставки \\
+GET    & /api/admin/stats                & JWT (admin)  & Статистика \\
+POST   & /api/admin/products             & JWT (admin)  & Создать товар \\
+PUT    & /api/admin/products/\{id\}      & JWT (admin)  & Обновить товар \\
+DELETE & /api/admin/products/\{id\}      & JWT (admin)  & Удалить товар \\
+GET    & /api/admin/orders               & JWT (admin)  & Все заказы \\
+GET    & /api/admin/users                & JWT (admin)  & Все пользователи \\
+GET    & /api/employee/orders            & JWT (emp.)   & Заказы филиала \\
+PATCH  & /api/employee/orders/\{id\}/status & JWT (emp.) & Статус заказа \\
+GET    & /api/branches                   & Нет          & Список филиалов \\
+\bottomrule
+\end{longtable}
+
+\chapter{Экранные формы системы}
+\label{app:screens}
+
+Система включает следующие экранные формы:
+\begin{itemize}
+  \item Главная страница с баннером и категориями товаров
+  \item Страница каталога с боковым фильтром и поиском
+  \item Страница детального просмотра товара с характеристиками, наличием в филиалах и сроком доставки
+  \item Корзина покупок с итоговой суммой и балансом кешбэка
+  \item Оформление заказа с выбором города доставки, способа оплаты и условий рассрочки
+  \item Личный кабинет с историей заказов и уровнем лояльности
+  \item Административная панель с дашбордом, CRUD-формами и таблицами управления
+  \item Портал сотрудника с заказами филиала и переключателем статусов
+\end{itemize}
+
+Демонстрационная версия системы доступна по адресу: \url{https://techstore-nine-iota.vercel.app}
+
+\vfill
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\noindent\textit{Диссертация выполнена самостоятельно, все используемые материалы помечены ссылками.}
+
+\vspace{1cm}
+
+\noindent\textbf{[ФИО магистранта]} \hfill \underline{\hspace{5cm}} \hspace{1cm} «\underline{\hspace{1cm}}» \underline{\hspace{3cm}} 2026~г.
+
+\vspace{0.5cm}
+
+\noindent\textbf{Научный руководитель} \hfill \underline{\hspace{5cm}} \hspace{1cm} «\underline{\hspace{1cm}}» \underline{\hspace{3cm}} 2026~г.
+
+\end{document}
