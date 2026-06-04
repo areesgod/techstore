@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 from database import get_db
 import models
-from auth import get_current_user
+from auth import get_current_user, create_access_token
 from email_utils import send_verification_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -63,7 +63,13 @@ def verify_email(token: str, db: Session = Depends(get_db)):
     user.email_verified = True
     evt.used = True
     db.commit()
-    return {"message": "Email успешно подтверждён!", "email": user.email}
+    access_token = create_access_token({"sub": user.email})
+    return {
+        "message": "Email успешно подтверждён!",
+        "email": user.email,
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
 
 
 @router.post("/resend-verification")

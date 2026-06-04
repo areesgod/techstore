@@ -28,18 +28,28 @@ export function AuthProvider({ children }) {
     return me.data
   }
 
+  // Used after email verification — token comes from the verify-email response
+  async function loginWithToken(accessToken) {
+    localStorage.setItem('token', accessToken)
+    const me = await api.get('/auth/me')
+    setUser(me.data)
+    return me.data
+  }
+
   async function register(name, email, password) {
     await api.post('/auth/register', { name, email, password })
     return login(email, password)
   }
 
-  function logout() {
+  function logout(clearCartFn) {
     localStorage.removeItem('token')
+    localStorage.removeItem('cart')
     setUser(null)
+    clearCartFn?.()
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithToken, register, logout }}>
       {children}
     </AuthContext.Provider>
   )

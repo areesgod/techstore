@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { formatPrice } from '../utils/price'
 import LoyaltyTier from '../components/LoyaltyTier'
 import { useAuth } from '../contexts/AuthContext'
+import { useCart } from '../contexts/CartContext'
 import api from '../api/client'
 
 const METHOD_LABEL = { card: 'Карта', cash: 'Наличные', installment: 'Рассрочка' }
@@ -22,6 +23,7 @@ const STATUS_LABELS = { pending:'Новый', confirmed:'Подтверждён'
 
 export default function Account() {
   const { user, logout } = useAuth()
+  const { clearCart } = useCart()
   const navigate = useNavigate()
   const { t } = useTranslation()
   const [orders, setOrders] = useState([])
@@ -38,7 +40,7 @@ export default function Account() {
     ]).finally(() => setLoading(false))
   }, [])
 
-  function handleLogout() { logout(); navigate('/') }
+  function handleLogout() { logout(clearCart); navigate('/') }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">

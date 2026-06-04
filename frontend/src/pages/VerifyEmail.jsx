@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { Zap, CheckCircle, XCircle, Mail } from 'lucide-react'
 import api from '../api/client'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams()
@@ -9,6 +10,8 @@ export default function VerifyEmail() {
   const [status, setStatus] = useState('verifying')  // verifying | success | error
   const [message, setMessage] = useState('')
   const [email, setEmail] = useState('')
+  const { loginWithToken } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!token) {
@@ -17,10 +20,14 @@ export default function VerifyEmail() {
       return
     }
     api.post(`/auth/verify-email?token=${encodeURIComponent(token)}`)
-      .then((r) => {
+      .then(async (r) => {
         setStatus('success')
         setMessage(r.data.message || 'Email подтверждён!')
         setEmail(r.data.email || '')
+        if (r.data.access_token) {
+          await loginWithToken(r.data.access_token)
+          setTimeout(() => navigate('/'), 2000)
+        }
       })
       .catch((err) => {
         setStatus('error')
@@ -55,8 +62,9 @@ export default function VerifyEmail() {
               </div>
               <h2 className="text-lg font-bold text-gray-900 mb-2">Готово! 🎉</h2>
               <p className="text-gray-600 text-sm mb-2">{message}</p>
-              {email && <p className="text-xs text-gray-400 mb-6">{email}</p>}
-              <Link to="/login" className="btn-primary w-full text-center block">Войти в аккаунт</Link>
+              {email && <p className="text-xs text-gray-400 mb-2">{email}</p>}
+              <p className="text-xs text-gray-400 mb-6">Выполняем вход автоматически...</p>
+              <Link to="/" className="btn-primary w-full text-center block">На главную</Link>
             </>
           )}
 

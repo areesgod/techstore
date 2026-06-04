@@ -15,6 +15,17 @@ export function CartProvider({ children }) {
     localStorage.setItem('cart', JSON.stringify(items))
   }, [items])
 
+  // Listen for logout (AuthContext removes 'cart' from localStorage)
+  useEffect(() => {
+    function handleStorage(e) {
+      if (e.key === 'cart' && e.newValue === null) {
+        setItems([])
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
+
   function addItem(product, quantity = 1) {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id)
