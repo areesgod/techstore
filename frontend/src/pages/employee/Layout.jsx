@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, ShoppingBag, LogOut, Zap, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import { useCart } from '../../contexts/CartContext'
 
 const links = [
   { to: '/employee', label: 'Дашборд', icon: <LayoutDashboard size={18} />, end: true },
@@ -10,10 +11,11 @@ const links = [
 
 export default function EmployeeLayout() {
   const { user, logout } = useAuth()
+  const { clearCart } = useCart()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
-  function handleLogout() { logout(); navigate('/') }
+  function handleLogout() { logout(clearCart); navigate('/') }
 
   const Sidebar = () => (
     <aside className="flex flex-col h-full bg-gray-800 text-gray-300 w-60 shrink-0">

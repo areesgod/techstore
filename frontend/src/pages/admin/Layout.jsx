@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import { useCart } from '../../contexts/CartContext'
 
 const links = [
   { to: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} />, end: true },
@@ -15,10 +16,11 @@ const links = [
 
 export default function AdminLayout() {
   const { user, logout } = useAuth()
+  const { clearCart } = useCart()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
-  function handleLogout() { logout(); navigate('/') }
+  function handleLogout() { logout(clearCart); navigate('/') }
 
   const Sidebar = () => (
     <aside className="flex flex-col h-full bg-gray-900 text-gray-300 w-64 shrink-0">

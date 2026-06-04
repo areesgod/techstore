@@ -9,12 +9,12 @@ import GlobalSearch from './GlobalSearch'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
-  const { count } = useCart()
+  const { count, clearCart } = useCart()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const { t } = useTranslation()
 
-  function handleLogout() { logout(); navigate('/') }
+  function handleLogout() { logout(clearCart); navigate('/') }
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
