@@ -12,6 +12,29 @@ from routers import auth, products, orders, downloads, admin, branches, cashback
 
 Base.metadata.create_all(bind=engine)
 
+
+def run_migrations():
+    """Add missing columns to existing tables without dropping data."""
+    migrations = [
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS cashback_balance FLOAT DEFAULT 0.0",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS total_spent FLOAT DEFAULT 0.0",
+        "ALTER TABLE orders ADD COLUMN IF NOT EXISTS cashback_earned FLOAT DEFAULT 0.0",
+        "ALTER TABLE orders ADD COLUMN IF NOT EXISTS cashback_used FLOAT DEFAULT 0.0",
+        "ALTER TABLE orders ADD COLUMN IF NOT EXISTS installment_months INTEGER DEFAULT NULL",
+    ]
+    with engine.connect() as conn:
+        for sql in migrations:
+            try:
+                conn.execute(text(sql))
+            except Exception:
+                pass
+        conn.commit()
+
+
+from sqlalchemy import text
+run_migrations()
+
 app = FastAPI(title="TechStore API", version="2.0.0")
 
 ALLOWED_ORIGINS = [
