@@ -73,7 +73,9 @@ def create_order(
         order_items_data.append((product, item_in.quantity, product.price))
 
     # Cashback redemption (only card payments can use cashback)
-    user = db.get(models.User, current_user.id)
+    user = db.query(models.User).filter(models.User.id == current_user.id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
     cashback_used = 0.0
     if method == "card" and body.use_cashback and user.cashback_balance >= CASHBACK_MIN_USE:
         max_use = min(user.cashback_balance, subtotal * CASHBACK_MAX_USE)
