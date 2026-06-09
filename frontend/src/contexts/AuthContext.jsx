@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
 
   async function register(name, email, password) {
     await api.post('/auth/register', { name, email, password })
-    return login(email, password)
+    // don't auto-login — user must verify email first
   }
 
   function logout(clearCartFn) {

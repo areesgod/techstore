@@ -1,16 +1,17 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Zap } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Zap, Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 export default function Register() {
   const { register } = useAuth()
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
   const [loading, setLoading] = useState(false)
+  const [registered, setRegistered] = useState(false)
+  const [sentEmail, setSentEmail] = useState('')
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -19,13 +20,41 @@ export default function Register() {
     setLoading(true)
     try {
       await register(form.name, form.email, form.password)
-      toast.success('Аккаунт создан! Проверьте почту для подтверждения email.', { duration: 5000 })
-      navigate('/')
+      setSentEmail(form.email)
+      setRegistered(true)
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Registration failed')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (registered) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="flex justify-center items-center gap-2 text-primary-700 font-bold text-2xl mb-1">
+              <Zap size={24} /> TechStore
+            </div>
+          </div>
+          <div className="card p-8 text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Mail size={32} className="text-blue-500" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Проверьте почту!</h2>
+            <p className="text-gray-600 text-sm mb-1">Письмо с подтверждением отправлено на:</p>
+            <p className="font-semibold text-gray-800 mb-4">{sentEmail}</p>
+            <p className="text-gray-500 text-xs mb-6">
+              Перейдите по ссылке в письме, чтобы активировать аккаунт. Ссылка действительна 24 часа.
+            </p>
+            <Link to="/login" className="btn-secondary w-full text-center block">
+              Войти после подтверждения
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
