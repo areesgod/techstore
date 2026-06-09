@@ -72,8 +72,50 @@ def toggle_admin(user_id: int, db: Session = Depends(get_db), current=Depends(ge
     if user.id == current.id:
         raise HTTPException(status_code=400, detail="Cannot change your own admin status")
     user.is_admin = not user.is_admin
+    if user.is_admin:
+        user.is_employee = False  # admin supersedes employee
     db.commit()
-    return {"id": user.id, "is_admin": user.is_admin}
+    return {"id": user.id, "is_admin": user.is_admin, "is_employee": user.is_employee}
+
+
+@router.patch("/users/{user_id}/toggle-employee")
+def toggle_employee(user_id: int, db: Session = Depends(get_db), current=Depends(get_admin_user)):
+    user = db.get(models.User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.id == current.id:
+        raise HTTPException(status_code=400, detail="Cannot change your own role")
+    user.is_employee = not user.is_employee
+    if user.is_employee:
+        user.is_admin = False
+    else:
+        user.branch_id = None
+    db.commit()
+    return {"id": user.id, "is_employee": user.is_employee, "branch_id": user.branch_id}
+
+
+@router.patch("/users/{user_id}/branch")
+def set_branch(user_id: int, branch_id: Optional[int], db: Session = Depends(get_db), _=Depends(get_admin_user)):
+    user = db.get(models.User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.branch_id = branch_id
+    db.commit()
+    return {"id": user.id, "branch_id": user.branch_id}
+
+
+@router.patch("/orders/{order_id}/status")
+def update_order_status(order_id: int, body: dict, db: Session = Depends(get_db), _=Depends(get_admin_user)):
+    order = db.get(models.Order, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    valid = ["pending", "processing", "shipped", "delivered", "cancelled"]
+    status = body.get("status")
+    if status not in valid:
+        raise HTTPException(status_code=400, detail=f"Status must be one of {valid}")
+    order.status = status
+    db.commit()
+    return {"id": order.id, "status": order.status}
 
 
 @router.delete("/users/{user_id}")
