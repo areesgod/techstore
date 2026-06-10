@@ -22,10 +22,10 @@ function fuzzyMatch(product, query) {
 
 function matchesPrice(price, range) {
   if (!range) return true
-  if (range === 'under_20') return price < 20
-  if (range === '20_to_50') return price >= 20 && price <= 50
-  if (range === '50_to_100') return price > 50 && price <= 100
-  if (range === 'over_100') return price > 100
+  if (range === 'under_20') return price < 10000
+  if (range === '20_to_50') return price >= 10000 && price <= 30000
+  if (range === '50_to_100') return price > 30000 && price <= 80000
+  if (range === 'over_100') return price > 80000
   return true
 }
 
@@ -52,8 +52,13 @@ export default function Products() {
 
   const filtered = useMemo(() => {
     return allProducts.filter((p) => {
-      if (category === 'digital' && !p.is_digital) return false
-      if (category === 'gadgets' && p.is_digital) return false
+      if (category !== 'all') {
+        // legacy support for old 'digital'/'gadgets' keys
+        if (category === 'digital' && !p.is_digital) return false
+        if (category === 'gadgets' && p.is_digital) return false
+        // new specific category keys
+        if (category !== 'digital' && category !== 'gadgets' && p.category !== category) return false
+      }
       if (!matchesPrice(p.price, priceRange)) return false
       return fuzzyMatch(p, search)
     })
