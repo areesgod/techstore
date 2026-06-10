@@ -29,6 +29,8 @@ def run_migrations():
             duration_seconds INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT NOW()
         )""",
+        "ALTER TABLE products ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE",
+        "UPDATE products SET is_active = TRUE WHERE is_active IS NULL",
     ]
     with engine.connect() as conn:
         for sql in migrations:
