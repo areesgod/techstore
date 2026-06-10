@@ -62,7 +62,7 @@ class ProductCreate(BaseModel):
     category: str = "digital"
     stock: Optional[int] = None
     image_url: Optional[str] = None
-    features: Optional[list[str]] = None
+    features: Optional[list[str] | dict] = None
 
 
 class ProductOut(BaseModel):
@@ -74,7 +74,7 @@ class ProductOut(BaseModel):
     category: str
     stock: Optional[int]
     image_url: Optional[str]
-    features: Optional[list[str]]
+    features: Optional[list[str] | dict]
     created_at: datetime
     model_config = {"from_attributes": True}
 
