@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
@@ -20,7 +21,7 @@ def list_products(
     limit: int = Query(20, le=100),
     db: Session = Depends(get_db),
 ):
-    q = db.query(models.Product).filter(models.Product.is_active == True)
+    q = db.query(models.Product).filter(or_(models.Product.is_active == True, models.Product.is_active == None))
     if search:
         q = q.filter(models.Product.name.ilike(f"%{search}%"))
     if category == "digital":
