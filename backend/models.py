@@ -133,6 +133,16 @@ class PasswordResetToken(Base):
     user: Mapped["User"] = relationship("User")
 
 
+class ProductView(Base):
+    __tablename__ = "product_views"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    duration_seconds: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    product: Mapped["Product"] = relationship("Product")
+
+
 class CashbackTransaction(Base):
     __tablename__ = "cashback_transactions"
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ShoppingCart, Download, ArrowLeft, CheckCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -6,6 +6,7 @@ import { formatPrice } from '../utils/price'
 import DeliveryEstimate from '../components/DeliveryEstimate'
 import api from '../api/client'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 export default function ProductDetail() {
@@ -15,6 +16,8 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true)
   const [city, setCity] = useState(() => localStorage.getItem('preferred_city') || '')
   const { addItem } = useCart()
+  const { user } = useAuth()
+  const startTimeRef = useRef(Date.now())
 
   useEffect(() => {
     api.get(`/products/${id}`)
@@ -22,6 +25,16 @@ export default function ProductDetail() {
       .catch(() => toast.error('Product not found'))
       .finally(() => setLoading(false))
   }, [id])
+
+  useEffect(() => {
+    startTimeRef.current = Date.now()
+    return () => {
+      if (user) {
+        const duration = Math.round((Date.now() - startTimeRef.current) / 1000)
+        api.post('/views', { product_id: parseInt(id), duration_seconds: duration }).catch(() => {})
+      }
+    }
+  }, [id, user])
 
   function handleCityChange(c) {
     setCity(c)

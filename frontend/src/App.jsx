@@ -34,6 +34,7 @@ import AdminUsers from './pages/admin/Users'
 
 import EmployeeDashboard from './pages/employee/Dashboard'
 import EmployeeOrders from './pages/employee/Orders'
+import PcBuilder from './pages/PcBuilder'
 
 function StoreShell() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/pc-builder" element={<PcBuilder />} />
           <Route path="/info/shipping" element={<ShippingPage />} />
           <Route path="/info/returns" element={<ReturnsPage />} />
           <Route path="/info/support" element={<SupportPage />} />

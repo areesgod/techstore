@@ -8,7 +8,7 @@ load_dotenv()
 from database import engine, Base
 import models
 
-from routers import auth, products, orders, downloads, admin, branches, cashback, employee, delivery, password_reset, email_verification
+from routers import auth, products, orders, downloads, admin, branches, cashback, employee, delivery, password_reset, email_verification, views, pc_builder
 
 Base.metadata.create_all(bind=engine)
 
@@ -22,6 +22,13 @@ def run_migrations():
         "ALTER TABLE orders ADD COLUMN IF NOT EXISTS cashback_earned FLOAT DEFAULT 0.0",
         "ALTER TABLE orders ADD COLUMN IF NOT EXISTS cashback_used FLOAT DEFAULT 0.0",
         "ALTER TABLE orders ADD COLUMN IF NOT EXISTS installment_months INTEGER DEFAULT NULL",
+        """CREATE TABLE IF NOT EXISTS product_views (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+            duration_seconds INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT NOW()
+        )""",
     ]
     with engine.connect() as conn:
         for sql in migrations:
@@ -51,7 +58,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for router in [auth, products, orders, downloads, admin, branches, cashback, employee, delivery, password_reset, email_verification]:
+for router in [auth, products, orders, downloads, admin, branches, cashback, employee, delivery, password_reset, email_verification, views, pc_builder]:
     app.include_router(router.router, prefix="/api")
 
 
