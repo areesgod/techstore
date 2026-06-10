@@ -3,8 +3,14 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from auth import get_admin_user
+from data.categories import CATEGORIES
 
 router = APIRouter(prefix="/products", tags=["products"])
+
+
+@router.get("/categories")
+def get_categories():
+    return CATEGORIES
 
 
 @router.get("", response_model=list[schemas.ProductOut])
@@ -21,6 +27,8 @@ def list_products(
         q = q.filter(models.Product.is_digital == True)
     elif category == "gadgets":
         q = q.filter(models.Product.is_digital == False)
+    elif category:
+        q = q.filter(models.Product.category == category)
     return q.order_by(models.Product.created_at.desc()).limit(limit).all()
 
 

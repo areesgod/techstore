@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { ShoppingCart, User, Zap, Menu, X } from 'lucide-react'
+import { ShoppingCart, User, Zap, Menu, X, Cpu } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
@@ -29,6 +29,9 @@ export default function Navbar() {
           {/* Nav links */}
           <div className="hidden md:flex items-center gap-4 shrink-0">
             <Link to="/products" className="text-gray-600 hover:text-primary-600 font-medium text-sm">{t('nav.products')}</Link>
+            <Link to="/pc-builder" className="flex items-center gap-1 text-gray-600 hover:text-primary-600 font-medium text-sm">
+              <Cpu size={15} />PC Сборщик
+            </Link>
             {user?.is_employee && !user?.is_admin && (
               <Link to="/employee" className="text-amber-600 hover:text-amber-700 font-medium text-sm">Портал</Link>
             )}
@@ -86,6 +89,7 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-2">
           <Link to="/products" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>{t('nav.products')}</Link>
+          <Link to="/pc-builder" className="flex items-center gap-1 py-2 text-gray-700" onClick={() => setMenuOpen(false)}><Cpu size={15} />PC Сборщик</Link>
           {user?.is_admin && (
             <Link to="/admin" className="block py-2 text-gray-700" onClick={() => setMenuOpen(false)}>{t('nav.admin')}</Link>
           )}
