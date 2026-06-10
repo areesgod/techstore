@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Plus, Pencil, Trash2, X, Check, Package } from 'lucide-react'
 import api from '../../api/client'
 import toast from 'react-hot-toast'
+import { formatPrice } from '../../utils/price'
 
 const empty = { name: '', description: '', price: '', is_digital: true, stock: '', image_url: '', features: '', category: 'digital' }
 
@@ -114,7 +115,7 @@ export default function AdminProducts() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-500 capitalize">{p.category}</td>
-                  <td className="px-6 py-4 font-semibold text-primary-700">${p.price.toFixed(2)}</td>
+                  <td className="px-6 py-4 font-semibold text-primary-700">{formatPrice(p.price)}</td>
                   <td className="px-6 py-4 text-gray-500">{p.is_digital ? '∞' : (p.stock ?? 0)}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 justify-end">
