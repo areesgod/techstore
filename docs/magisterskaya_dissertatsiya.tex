@@ -194,7 +194,7 @@ This dissertation is devoted to the design and practical implementation of a mul
 
 \section{Структура диссертации}
 
-Диссертация состоит из введения, восьми глав, заключения, списка литературы (49 источников) и приложений. Общий объём --- 90--110 страниц.
+Диссертация состоит из введения, восьми глав, заключения, списка литературы (49 источников) и приложений. Общий объём --- 95--115 страниц.
 
 % ============================================================
 \chapter{ОБЗОР ЛИТЕРАТУРЫ}
@@ -408,15 +408,41 @@ status              & VARCHAR(50)   & pending / processing / completed \\
 \begin{enumerate}
   \item \texttt{POST /api/auth/token} с email + паролем.
   \item Сервер верифицирует пароль через \texttt{bcrypt.checkpw()}.
-  \item Генерируется JWT: \texttt{\{sub: email, exp: now+30d\}}, подпись HS256.
-  \item Клиент сохраняет токен, передаёт в заголовке \texttt{Authorization: Bearer}.
+  \item Генерируется JWT: \texttt{\{sub: user.email, exp: now+30d\}}, подпись HS256.
+  \item Клиент сохраняет токен в \texttt{localStorage}, передаёт в заголовке \texttt{Authorization: Bearer}.
+  \item \texttt{GET /api/auth/me} декодирует токен и ищет пользователя по полю \texttt{sub} (email).
 \end{enumerate}
+
+Поле \texttt{sub} в JWT хранит email пользователя (строка). Функция \texttt{get\_current\_user} поддерживает обратную совместимость: если \texttt{sub} является числом (старые токены до миграции), поиск выполняется по первичному ключу; иначе --- по email.
+
+\begin{lstlisting}[language=Python, caption={Декодирование JWT и поиск пользователя (auth.py)}]
+payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+sub: str = payload.get("sub")
+# Обратная совместимость: старые токены хранили user.id
+if sub.isdigit():
+    user = db.get(models.User, int(sub))
+else:
+    user = db.query(models.User).filter(
+        models.User.email == sub
+    ).first()
+\end{lstlisting}
 
 \subsection{Верификация email и автовход}
 
-UUID-токен генерируется при регистрации, отправляется через Resend API с домена \texttt{tech-store.site}. Срок действия --- 24 часа. Неверифицированные пользователи не могут оформлять заказы.
+При регистрации UUID-токен генерируется и отправляется через Resend API с домена \texttt{tech-store.site}. Срок действия --- 24 часа. Неверифицированные пользователи не могут оформлять заказы.
 
-После перехода по ссылке верификации бэкенд возвращает JWT-токен вместе с подтверждением, что позволяет фронтенду выполнить автоматический вход без дополнительного шага. Пользователь перенаправляется на главную страницу через 2 секунды.
+После успешной регистрации пользователь видит экран подтверждения с указанием адреса электронной почты вместо автоматического редиректа. После перехода по ссылке верификации бэкенд возвращает JWT-токен вместе с подтверждением, что позволяет фронтенду выполнить автоматический вход без дополнительного шага. Пользователь перенаправляется на главную страницу через 2 секунды.
+
+\begin{lstlisting}[language=Python, caption={Возврат JWT при верификации email}]
+user.email_verified = True
+db.commit()
+access_token = create_access_token({"sub": user.email})
+return {
+    "message": "Email успешно подтверждён!",
+    "email": user.email,
+    "access_token": access_token,
+}
+\end{lstlisting}
 
 \subsection{Сброс пароля}
 
@@ -468,16 +494,18 @@ UUID-токен генерируется при регистрации, отпр
 
 \textbf{Администрирование (ADMIN):}
 \begin{itemize}
-  \item FR-20: Дашборд с ключевыми метриками
+  \item FR-20: Дашборд с ключевыми метриками (выручка, заказы, товары, покупатели)
   \item FR-21: CRUD-управление товарами
-  \item FR-22: Управление всеми заказами
-  \item FR-23: Управление пользователями (назначение ролей, привязка к филиалу)
+  \item FR-22: Управление всеми заказами с изменением статуса и фильтрацией
+  \item FR-23: Управление пользователями: переключение ролей администратор / сотрудник / покупатель
+  \item FR-26: Привязка сотрудника к конкретному филиалу через выпадающий список
+  \item FR-27: Изменение статуса любого заказа администратором (pending / processing / shipped / delivered / cancelled)
 \end{itemize}
 
 \textbf{Сотрудник (EMPLOYEE):}
 \begin{itemize}
   \item FR-24: Просмотр заказов своего филиала с фильтрацией по статусу
-  \item FR-25: Изменение статуса заказа (pending → processing → shipped → delivered)
+  \item FR-25: Изменение статуса заказа (pending → confirmed → processing → shipped → delivered → cancelled)
 \end{itemize}
 
 \section{Нефункциональные требования}
@@ -681,6 +709,52 @@ def get_admin_user(
         raise HTTPException(status_code=403,
                             detail="Forbidden")
     return current_user
+\end{lstlisting}
+
+\subsection{Административное управление ролями}
+
+Административная панель предоставляет полный контроль над ролями пользователей непосредственно из таблицы без перехода на отдельную страницу. Реализованы три новых эндпоинта:
+
+\begin{lstlisting}[language=Python, caption={Управление ролями пользователей (admin.py)}]
+@router.patch("/users/{user_id}/toggle-admin")
+def toggle_admin(user_id: int, db, current):
+    user.is_admin = not user.is_admin
+    if user.is_admin:
+        user.is_employee = False  # admin > employee
+    db.commit()
+    return {"is_admin": user.is_admin}
+
+@router.patch("/users/{user_id}/toggle-employee")
+def toggle_employee(user_id: int, db, current):
+    user.is_employee = not user.is_employee
+    if not user.is_employee:
+        user.branch_id = None  # очистить филиал
+    db.commit()
+    return {"is_employee": user.is_employee}
+
+@router.patch("/users/{user_id}/branch")
+def set_branch(user_id: int, branch_id: int, db, _):
+    user.branch_id = branch_id
+    db.commit()
+\end{lstlisting}
+
+Визуально роли отображаются цветными бейджами: \textbf{Admin} (фиолетовый), \textbf{Employee} (янтарный), \textbf{Customer} (серый). При назначении роли сотрудника в строке таблицы появляется выпадающий список филиалов для немедленного назначения.
+
+\subsection{Управление статусами заказов (администратор)}
+
+Администратор видит все заказы системы и может изменять их статус через выпадающий список прямо в строке таблицы. Доступные статусы: \texttt{pending}, \texttt{processing}, \texttt{shipped}, \texttt{delivered}, \texttt{cancelled}. Реализована фильтрация по статусу и поиск по имени, email или номеру заказа.
+
+\begin{lstlisting}[language=Python, caption={Изменение статуса заказа администратором}]
+@router.patch("/orders/{order_id}/status")
+def update_order_status(order_id: int, body: dict,
+                        db, _=Depends(get_admin_user)):
+    valid = ["pending","processing","shipped",
+             "delivered","cancelled"]
+    if body.get("status") not in valid:
+        raise HTTPException(400, "Invalid status")
+    order.status = body["status"]
+    db.commit()
+    return {"id": order.id, "status": order.status}
 \end{lstlisting}
 
 \section{Развёртывание}
@@ -1171,8 +1245,11 @@ ML-поиск (BM25/LTR)              & \checkmark & Частично   & \textt
     \item модель прогнозирования спроса XGBoost, MAE = 2.3, MAPE = 8.7\%;
     \item Learning-to-Rank поиск (BM25 + CF), превышает ILIKE на 36\% по NDCG@10.
   \end{itemize}
+  \item Реализовано полное управление ролями из административной панели: переключение ролей admin/employee/customer и привязка к филиалу в одном интерфейсе.
+  \item Администратор получил права на изменение статуса любого заказа с фильтрацией и поиском.
+  \item Устранены критические ошибки аутентификации: несоответствие поля \texttt{sub} в JWT-токене, обеспечена обратная совместимость токенов.
   \item Развёрнута облачная инфраструктура с CI/CD (Vercel + Render).
-  \item Все 25 функциональных требований выполнены; p95 времени ответа --- 287 мс.
+  \item Все 27 функциональных требований выполнены; p95 времени ответа --- 287 мс.
   \item Операционные расходы --- 7\,900 тг/мес; окупаемость относительно Kaspi --- 1--2 месяца.
 \end{enumerate}
 
@@ -1300,7 +1377,11 @@ POST   & /api/admin/products             & JWT (admin) & Создать това
 PUT    & /api/admin/products/\{id\}      & JWT (admin) & Обновить товар \\
 DELETE & /api/admin/products/\{id\}      & JWT (admin) & Удалить товар \\
 GET    & /api/admin/orders               & JWT (admin) & Все заказы \\
-GET    & /api/admin/users                & JWT (admin) & Все пользователи \\
+GET    & /api/admin/users                    & JWT (admin) & Все пользователи \\
+PATCH  & /api/admin/users/\{id\}/toggle-admin    & JWT (admin) & Переключить роль admin \\
+PATCH  & /api/admin/users/\{id\}/toggle-employee & JWT (admin) & Переключить роль employee \\
+PATCH  & /api/admin/users/\{id\}/branch          & JWT (admin) & Назначить филиал \\
+PATCH  & /api/admin/orders/\{id\}/status         & JWT (admin) & Изменить статус заказа \\
 GET    & /api/employee/orders            & JWT (emp.)  & Заказы филиала \\
 PATCH  & /api/employee/orders/\{id\}/status & JWT (emp.) & Статус заказа \\
 GET    & /api/branches                   & Нет         & Список филиалов \\
