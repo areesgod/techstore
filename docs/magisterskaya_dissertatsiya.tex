@@ -40,6 +40,7 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{makecell}
+\usepackage{adjustbox}
 
 % ── Листинги кода ───────────────────────────────────────────
 \usepackage{listings}
@@ -77,8 +78,13 @@
   citecolor=blue,
   urlcolor=blue,
   bookmarks=true,
-  bookmarksopen=true
+  bookmarksopen=true,
+  backref=page
 ]{hyperref}
+% Подпись «(стр. X)» в списке литературы — ссылка назад в текст
+\renewcommand*{\backref}[1]{}
+\renewcommand*{\backrefalt}[4]{%
+  \ifcase #1 \or (стр.~#2)\else (стр.~#2)\fi}
 
 % ── Заголовки глав ──────────────────────────────────────────
 \usepackage{titlesec}
@@ -137,11 +143,11 @@
 \vspace{2.5cm}
 \begin{flushleft}
 \hspace{1cm}
-\begin{tabular}{lp{3cm}l}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lp{3cm}l}
 Научный руководитель & (подпись) & Карымсакова И.Б.,\\
                      &           & PhD, доцент \\[14pt]
 Магистрант           & (подпись) & Магавин А.Г. \\
-\end{tabular}
+\end{tabular}}
 \end{flushleft}
 
 \vfill
@@ -266,7 +272,7 @@ TechStore относится к модели B2C и работает как с �
 \begin{table}[h!]
 \centering
 \caption{Сравнительный анализ платформ электронной торговли}
-\begin{tabular}{p{3cm}p{2cm}p{2cm}p{2cm}p{2cm}p{2.5cm}}
+\adjustbox{max width=\linewidth}{\begin{tabular}{p{3cm}p{2cm}p{2cm}p{2cm}p{2cm}p{2.5cm}}
 \toprule
 \textbf{Критерий} & \textbf{TechStore} & \textbf{Kaspi.kz} & \textbf{Technodom} & \textbf{Shop.kz} & \textbf{Shopify} \\
 \midrule
@@ -282,7 +288,7 @@ ML-рекомендации        & \checkmark & \checkmark & \texttimes & \tex
 Рассрочка 0\%          & 3/6/12 мес.& Kaspi pay  & Ограничено & \texttimes & \texttimes \\
 Стоимость в месяц (тг) & 7\,900     & 0+комиссия & Закрыто    & 0+комиссия & 18\,000+ \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \textbf{Вывод:} ни одна из рассмотренных платформ не даёт одновременно полного контроля над продуктом, глубокой программы лояльности с кешбэком до 50\%, трёхъязычного интерфейса, интеллектуального поиска и интеграции с региональной логистикой при низкой стоимости владения. TechStore закрывает все эти потребности в рамках единой открытой платформы.
@@ -329,7 +335,7 @@ HTTP-методы маппируются на CRUD-операции соглас
 \begin{table}[h!]
 \centering
 \caption{Маппинг HTTP-методов}
-\begin{tabular}{lll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lll}
 \toprule
 \textbf{Метод} & \textbf{Операция} & \textbf{Пример} \\
 \midrule
@@ -338,7 +344,7 @@ POST   & Создание   & \texttt{POST /api/orders} \\
 PUT    & Обновление & \texttt{PUT /api/products/\{id\}} \\
 DELETE & Удаление   & \texttt{DELETE /api/admin/users/\{id\}} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Модели данных}
@@ -360,7 +366,7 @@ Order (1) --< CashbackTransaction (M)
 \begin{table}[h!]
 \centering
 \caption{Таблица \texttt{users}}
-\begin{tabular}{lll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lll}
 \toprule
 \textbf{Поле} & \textbf{Тип} & \textbf{Описание} \\
 \midrule
@@ -376,13 +382,13 @@ total\_spent     & FLOAT            & Накопленная сумма поку
 email\_verified  & BOOLEAN          & Верификация email \\
 created\_at      & DATETIME         & Дата регистрации \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{table}[h!]
 \centering
 \caption{Таблица \texttt{orders}}
-\begin{tabular}{lll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lll}
 \toprule
 \textbf{Поле} & \textbf{Тип} & \textbf{Описание} \\
 \midrule
@@ -397,7 +403,7 @@ payment\_method     & VARCHAR(20)   & card / cash / installment \\
 installment\_months & INTEGER       & Число месяцев рассрочки \\
 status              & VARCHAR(50)   & pending / processing / completed \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Программа лояльности: математическая модель}
@@ -407,7 +413,7 @@ status              & VARCHAR(50)   & pending / processing / completed \\
 \begin{table}[h!]
 \centering
 \caption{Уровни программы лояльности (актуальные значения)}
-\begin{tabular}{clrr}
+\adjustbox{max width=\linewidth}{\begin{tabular}{clrr}
 \toprule
 \textbf{№} & \textbf{Уровень} & \textbf{Порог (тг)} & \textbf{Кешбэк} \\
 \midrule
@@ -421,7 +427,7 @@ status              & VARCHAR(50)   & pending / processing / completed \\
 8 & VIP       & 10\,000\,000 & 35\% \\
 9 & Легенда   & 25\,000\,000 & 50\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Формула начисления кешбэка при оплате картой:
@@ -447,7 +453,7 @@ status              & VARCHAR(50)   & pending / processing / completed \\
 \begin{table}[h!]
 \centering
 \caption{Примеры сопоставления городов с филиалами}
-\begin{tabular}{lllrr}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lllrr}
 \toprule
 \textbf{Город} & \textbf{Регион} & \textbf{Филиал} & \textbf{local (дн.)} & \textbf{transit (дн.)} \\
 \midrule
@@ -460,7 +466,7 @@ status              & VARCHAR(50)   & pending / processing / completed \\
 Семей           & Восток  & УК            & 2 & 5 \\
 Кызылорда       & Юг      & Шымкент       & 3 & 5 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Аутентификация и безопасность}
@@ -583,7 +589,7 @@ return {
 \begin{table}[h!]
 \centering
 \caption{Нефункциональные требования}
-\begin{tabular}{lp{9cm}}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lp{9cm}}
 \toprule
 \textbf{Код} & \textbf{Требование} \\
 \midrule
@@ -595,7 +601,7 @@ NFR-05 & JWT: срок $\leq$ 30 дней, HS256 \\
 NFR-06 & CORS: только доверенные домены \\
 NFR-07 & Горизонтальная масштабируемость \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Архитектура системы}
@@ -616,7 +622,7 @@ NFR-07 & Горизонтальная масштабируемость \\
 \begin{table}[h!]
 \centering
 \caption{Роутеры FastAPI и их назначение}
-\begin{tabular}{lll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lll}
 \toprule
 \textbf{Префикс} & \textbf{Файл} & \textbf{Назначение} \\
 \midrule
@@ -632,7 +638,7 @@ NFR-07 & Горизонтальная масштабируемость \\
 /api/views         & routers/views.py          & Отслеживание просмотров \\
 /api/auth/password & routers/password\_reset.py & Сброс пароля \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \subsection{Контекст и состояние на фронтенде}
@@ -654,7 +660,7 @@ NFR-07 & Горизонтальная масштабируемость \\
 \begin{table}[h!]
 \centering
 \caption{Технологии фронтенда}
-\begin{tabular}{lll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lll}
 \toprule
 \textbf{Технология} & \textbf{Версия} & \textbf{Обоснование} \\
 \midrule
@@ -665,13 +671,13 @@ React Router & 6.x    & Декларативная маршрутизация \\
 i18next      & latest & Промышленный стандарт i18n \\
 Axios        & latest & HTTP-клиент с интерцепторами \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{table}[h!]
 \centering
 \caption{Технологии бэкенда}
-\begin{tabular}{lll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lll}
 \toprule
 \textbf{Технология} & \textbf{Версия} & \textbf{Обоснование} \\
 \midrule
@@ -683,7 +689,7 @@ bcrypt      & latest  & Адаптивное хэширование пароле
 python-jose & latest  & JWT HS256 \\
 Resend      & HTTP    & Транзакционные письма \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Реализация ключевых модулей}
@@ -871,7 +877,7 @@ def update_order_status(order_id: int, body: dict,
 \begin{table}[h!]
 \centering
 \caption{Группы и примеры категорий}
-\begin{tabular}{ll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{ll}
 \toprule
 \textbf{Группа} & \textbf{Категории} \\
 \midrule
@@ -882,7 +888,7 @@ PC Комплектующие & cpu, gpu, motherboard, ram, storage, psu, case, 
 Умный дом        & smart\_home \\
 Сеть             & network \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Эндпоинт \texttt{GET /api/products/categories} возвращает список объектов \texttt{\{key, label, group, icon\}}. Компонент \texttt{ShopSidebar} загружает категории при монтировании и группирует их через \texttt{Array.reduce}, отображая отдельный блок для каждой группы.
@@ -1109,7 +1115,7 @@ const maxCashback = Math.min(
 \begin{table}[h!]
 \centering
 \caption{Тест-кейсы аутентификации}
-\begin{tabular}{clll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{clll}
 \toprule
 \textbf{№} & \textbf{Тест-кейс} & \textbf{Ожидаемый результат} & \textbf{Статус} \\
 \midrule
@@ -1120,13 +1126,13 @@ const maxCashback = Math.min(
 5 & Сброс пароля                     & 200, письмо отправлено & Passed \\
 6 & Сброс --- неизвестный email      & 404                    & Passed \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{table}[h!]
 \centering
 \caption{Тест-кейсы лояльности}
-\begin{tabular}{clrll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{clrll}
 \toprule
 \textbf{№} & \textbf{Сценарий} & \textbf{total\_spent} & \textbf{Уровень} & \textbf{Кешбэк} \\
 \midrule
@@ -1136,13 +1142,13 @@ const maxCashback = Math.min(
 4 & VIP-клиент          & 1\,200\,000 & Сапфир   & 13\% \\
 5 & Топ-клиент          & 12\,000\,000 & Легенда & 50\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{table}[h!]
 \centering
 \caption{Тест-кейсы каталога и корзины}
-\begin{tabular}{clll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{clll}
 \toprule
 \textbf{№} & \textbf{Тест-кейс} & \textbf{Ожидаемый результат} & \textbf{Статус} \\
 \midrule
@@ -1156,13 +1162,13 @@ const maxCashback = Math.min(
 8  & Корзина сохраняется при входе         & Товары не потеряны           & Passed \\
 9  & Корзина очищается при выходе          & localStorage пуст            & Passed \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{table}[h!]
 \centering
 \caption{Тест-кейсы оформления заказа}
-\begin{tabular}{clll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{clll}
 \toprule
 \textbf{№} & \textbf{Тест-кейс} & \textbf{Ожидаемый результат} & \textbf{Статус} \\
 \midrule
@@ -1173,13 +1179,13 @@ const maxCashback = Math.min(
 5 & Заказ без верификации email     & Ошибка 403                    & Passed \\
 6 & Заказ с недостаточным стоком    & Ошибка 400                    & Passed \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{table}[h!]
 \centering
 \caption{Тест-кейсы конфигуратора ПК}
-\begin{tabular}{clll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{clll}
 \toprule
 \textbf{№} & \textbf{Тест-кейс} & \textbf{Ожидаемый результат} & \textbf{Статус} \\
 \midrule
@@ -1190,13 +1196,13 @@ const maxCashback = Math.min(
 5 & Mini Tower + ATX плата                  & issues: форм-фактор   & Passed \\
 6 & Расчёт БП: CPU 125W + GPU 300W          & рек. БП $\geq$ 600W   & Passed \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{table}[h!]
 \centering
 \caption{Тест-кейсы административной панели}
-\begin{tabular}{clll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{clll}
 \toprule
 \textbf{№} & \textbf{Тест-кейс} & \textbf{Ожидаемый результат} & \textbf{Статус} \\
 \midrule
@@ -1208,7 +1214,7 @@ const maxCashback = Math.min(
 6 & Изменить статус заказа          & Статус обновлён               & Passed \\
 7 & Доступ без роли admin           & HTTP 403                      & Passed \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Нагрузочное тестирование}
@@ -1216,7 +1222,7 @@ const maxCashback = Math.min(
 \begin{table}[h!]
 \centering
 \caption{Результаты нагрузочного тестирования (50 пользователей)}
-\begin{tabular}{lrrr}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lrrr}
 \toprule
 \textbf{Эндпоинт} & \textbf{Avg RT (мс)} & \textbf{p95 (мс)} & \textbf{RPS} \\
 \midrule
@@ -1224,7 +1230,7 @@ GET /api/products    & 142 & 287 & 180 \\
 POST /api/auth/token & 234 & 421 & 110 \\
 GET /api/orders      & 189 & 334 & 145 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Все показатели укладываются в NFR-01 ($\leq$ 500 мс для p95).
@@ -1254,7 +1260,7 @@ GET /api/orders      & 189 & 334 & 145 \\
 \begin{table}[h!]
 \centering
 \caption{Результаты оценки безопасности}
-\begin{tabular}{lll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lll}
 \toprule
 \textbf{Уязвимость} & \textbf{Меры защиты} & \textbf{Статус} \\
 \midrule
@@ -1265,7 +1271,7 @@ Broken Auth          & bcrypt + JWT exp + email verify & Защищено \\
 Sensitive Data       & HTTPS/TLS + хэши паролей        & Защищено \\
 Broken Access Control & Role-based guards               & Защищено \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 % ============================================================
@@ -1276,7 +1282,7 @@ Broken Access Control & Role-based guards               & Защищено \\
 \begin{table}[h!]
 \centering
 \caption{Трудозатраты по модулям}
-\begin{tabular}{lr}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lr}
 \toprule
 \textbf{Модуль} & \textbf{Трудозатраты (ч)} \\
 \midrule
@@ -1296,7 +1302,7 @@ Broken Access Control & Role-based guards               & Защищено \\
 \midrule
 \textbf{Итого}               & \textbf{320} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 При ставке 5\,000 тг/час:
@@ -1307,7 +1313,7 @@ Broken Access Control & Role-based guards               & Защищено \\
 \begin{table}[h!]
 \centering
 \caption{Ежемесячные расходы}
-\begin{tabular}{lr}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lr}
 \toprule
 \textbf{Статья} & \textbf{Стоимость/мес} \\
 \midrule
@@ -1318,7 +1324,7 @@ Resend (до 3\,000 писем/мес)  & 0 тг \\
 \midrule
 \textbf{Итого}                & $\approx$\textbf{7\,900 тг} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Сравнение с альтернативами}
@@ -1326,7 +1332,7 @@ Resend (до 3\,000 писем/мес)  & 0 тг \\
 \begin{table}[h!]
 \centering
 \caption{Сравнение стоимости владения}
-\begin{tabular}{lrrl}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lrrl}
 \toprule
 \textbf{Решение} & \textbf{Внедрение} & \textbf{/мес} & \textbf{Кастомизация} \\
 \midrule
@@ -1335,7 +1341,7 @@ Shopify Business          & 0              & 50\,000 тг & Ограниченн
 Magento Enterprise        & 5\,000\,000 тг & 200\,000 тг & Полная \\
 Kaspi магазин             & 0              & 10--20\% продаж & Минимальная \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 При обороте 1\,000\,000 тг/мес окупаемость относительно Kaspi достигается за \textbf{1,5 месяца}.
@@ -1348,7 +1354,7 @@ Kaspi магазин             & 0              & 10--20\% продаж & Ми
 \centering
 \small
 \caption{Расчёт ROI за 12 месяцев}
-\begin{tabular}{p{5.5cm}rrr}
+\adjustbox{max width=\linewidth}{\begin{tabular}{p{5.5cm}rrr}
 \toprule
 \textbf{Показатель} & \textbf{\makecell{Сценарий А\\(500\,000\\тг/мес)}} & \textbf{\makecell{Сценарий Б\\(1\,000\,000\\тг/мес)}} & \textbf{\makecell{Сценарий В\\(3\,000\,000\\тг/мес)}} \\
 \midrule
@@ -1359,7 +1365,7 @@ Kaspi магазин             & 0              & 10--20\% продаж & Ми
 ROI, \%                              & --49,7\%    & +6,6\%      & +231,6\%    \\
 Срок окупаемости                     & $>$12 мес   & $\approx$11 мес & $\approx$4 мес \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Как видно из таблицы, система становится экономически выгодной уже при обороте от 1 млн тенге в месяц. При росте продаж ROI значительно улучшается: при обороте 3 млн тг/мес инвестиции окупаются примерно за 4 месяца.
@@ -1522,7 +1528,7 @@ def predict_for_user(model, user_id: int,
 \begin{table}[h!]
 \centering
 \caption{Признаки модели прогнозирования спроса}
-\begin{tabular}{ll}
+\adjustbox{max width=\linewidth}{\begin{tabular}{ll}
 \toprule
 \textbf{Признак} & \textbf{Описание} \\
 \midrule
@@ -1537,7 +1543,7 @@ price              & Текущая цена товара \\
 category\_enc      & Категория (Label Encoded) \\
 branch\_id         & Номер филиала \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \begin{lstlisting}[language=Python, caption={Прогнозирование спроса через XGBoost}]
@@ -1625,7 +1631,7 @@ def train_demand_model(df: pd.DataFrame):
 \begin{table}[h!]
 \centering
 \caption{Сравнение методов поиска}
-\begin{tabular}{lrrr}
+\adjustbox{max width=\linewidth}{\begin{tabular}{lrrr}
 \toprule
 \textbf{Метод} & \textbf{NDCG@10} & \textbf{Покрытие} & \textbf{RT (мс)} \\
 \midrule
@@ -1633,7 +1639,7 @@ ILIKE (текущий)        & 0.61 & 100\% & 45 \\
 BM25 (Elasticsearch)   & 0.74 & 100\% & 30 \\
 BM25 + CF (LTR)        & 0.83 & 100\% & 55 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \section{Архитектура ML-подсистемы}
@@ -1665,7 +1671,7 @@ ML-модели не требуют GPU и работают на стандар�
 \begin{table}[h!]
 \centering
 \caption{Наличие ML-функций в конкурирующих платформах}
-\begin{tabular}{p{4.5cm}p{2cm}p{2cm}p{2cm}p{2.5cm}}
+\adjustbox{max width=\linewidth}{\begin{tabular}{p{4.5cm}p{2cm}p{2cm}p{2cm}p{2.5cm}}
 \toprule
 \textbf{ML-функция} & \textbf{TechStore} & \textbf{Kaspi} & \textbf{Technodom} & \textbf{Shop.kz} \\
 \midrule
@@ -1675,7 +1681,7 @@ ML-модели не требуют GPU и работают на стандар�
 ML-поиск (BM25/LTR)              & \checkmark & Частично   & \texttimes & \texttimes \\
 Контроль параметров ML           & Полный     & Нет        & Нет        & Нет \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \textbf{Ключевое конкурентное преимущество:} TechStore — единственная платформа на казахстанском рынке, которая даёт продавцу полный контроль над алгоритмами рекомендаций, прогнозом спроса и поисковым ранжированием при открытом исходном коде и минимальных операционных расходах.
