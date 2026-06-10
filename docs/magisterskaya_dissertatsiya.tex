@@ -157,6 +157,7 @@ This dissertation is devoted to the design and practical implementation of a mul
   \item Создать многоуровневую программу лояльности с начислением кешбэка.
   \item Реализовать модуль доставки с картой 55 городов Казахстана и привязкой к филиалам.
   \item Разработать ML-подсистему: гибридную рекомендательную систему, модель прогнозирования спроса и улучшенное поисковое ранжирование.
+  \item Разработать конфигуратор ПК с проверкой совместимости комплектующих и расчётом мощности блока питания.
   \item Развернуть систему в облачной инфраструктуре и обеспечить её доступность.
   \item Провести функциональное тестирование всех модулей системы.
 \end{enumerate}
@@ -194,7 +195,7 @@ This dissertation is devoted to the design and practical implementation of a mul
 
 \section{Структура диссертации}
 
-Диссертация состоит из введения, восьми глав, заключения, списка литературы (49 источников) и приложений. Общий объём --- 95--115 страниц.
+Диссертация состоит из введения, восьми глав, заключения, списка литературы (49 источников) и приложений. Общий объём --- 95--120 страниц и включает описание конфигуратора ПК, системы категорий и модуля отслеживания просмотров.
 
 % ============================================================
 \chapter{ОБЗОР ЛИТЕРАТУРЫ}
@@ -464,8 +465,8 @@ return {
 
 \textbf{Каталог (CATALOG):}
 \begin{itemize}
-  \item FR-06: Отображение 30 товаров (15 цифровых + 15 физических)
-  \item FR-07: Фильтрация по категории и диапазону цен через боковую панель
+  \item FR-06: Отображение 65+ товаров, организованных в 23 категории шести групп: PC-комплектующие, периферия, гаджеты, цифровые продукты и др.
+  \item FR-07: Фильтрация по 23 категориям (загружаемым динамически через \texttt{GET /api/products/categories}) и диапазону цен в тенге (до 10\,000 / 10\,000--30\,000 / 30\,000--80\,000 / свыше 80\,000 ₸) через боковую панель
   \item FR-08: Нечёткий текстовый поиск в реальном времени (глобальный и локальный)
   \item FR-09: Детальная страница товара с расчётом срока доставки по городу
 \end{itemize}
@@ -506,6 +507,15 @@ return {
 \begin{itemize}
   \item FR-24: Просмотр заказов своего филиала с фильтрацией по статусу
   \item FR-25: Изменение статуса заказа (pending → confirmed → processing → shipped → delivered → cancelled)
+\end{itemize}
+
+\textbf{Конфигуратор ПК (PC-BUILDER):}
+\begin{itemize}
+  \item FR-28: Выбор компонентов по 8 слотам (CPU, GPU, материнская плата, ОЗУ, накопитель, БП, корпус, охлаждение)
+  \item FR-29: Автоматическая проверка совместимости (сокет CPU/MB, тип ОЗУ DDR4/DDR5, форм-фактор корпуса/MB)
+  \item FR-30: Расчёт рекомендуемой мощности БП: $P_\text{rec} = \lceil 1.2 \cdot (P_\text{CPU} + P_\text{GPU} + P_\text{base} + P_\text{RAM} + P_\text{stor} + P_\text{fans}) \rceil_\text{tier}$
+  \item FR-31: Добавление всего конфигуратора в корзину одной кнопкой
+  \item FR-32: Отслеживание времени просмотра товаров (\texttt{product\_views}) для накопления данных ML-рекомендаций
 \end{itemize}
 
 \section{Нефункциональные требования}
@@ -757,6 +767,117 @@ def update_order_status(order_id: int, body: dict,
     return {"id": order.id, "status": order.status}
 \end{lstlisting}
 
+\subsection{Система категорий товаров}
+
+Вместо двух статических категорий (\texttt{digital}/\texttt{gadgets}) реализована иерархическая система из 23 категорий в 6 группах, описанная в файле \texttt{backend/data/categories.py}:
+
+\begin{table}[h!]
+\centering
+\caption{Группы и примеры категорий}
+\begin{tabular}{ll}
+\toprule
+\textbf{Группа} & \textbf{Категории} \\
+\midrule
+PC Комплектующие & cpu, gpu, motherboard, ram, storage, psu, case, cooling \\
+Периферия        & keyboard, mouse, monitor \\
+Гаджеты          & gadgets \\
+Цифровые         & digital \\
+Умный дом        & smart\_home \\
+Сеть             & network \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Эндпоинт \texttt{GET /api/products/categories} возвращает список объектов \texttt{\{key, label, group, icon\}}. Компонент \texttt{ShopSidebar} загружает категории при монтировании и группирует их через \texttt{Array.reduce}, отображая отдельный блок для каждой группы.
+
+\subsection{Конфигуратор ПК}
+
+Конфигуратор ПК (\texttt{/pc-builder}) позволяет пользователю собрать компьютер из совместимых компонентов. Каждый компонент хранится как обычный товар с полем \texttt{features} (JSON), содержащим технические характеристики.
+
+\begin{lstlisting}[language=Python, caption={Пример продукта-процессора с features}]
+Product(
+  name="AMD Ryzen 5 7600X",
+  category="cpu",
+  price=89990,
+  features={
+    "socket": "AM5", "cores": 6,
+    "tdp": 105, "ram_type": "DDR5"
+  }
+)
+\end{lstlisting}
+
+\textbf{Проверка совместимости} выполняется на бэкенде:
+
+\begin{lstlisting}[language=Python, caption={Эндпоинт проверки совместимости (pc\_builder.py)}]
+@router.post("/pc-builder/check-compatibility")
+def check_compatibility(body: CompatCheckRequest):
+    issues = []
+    if body.cpu_socket and body.motherboard_socket:
+        if body.cpu_socket != body.motherboard_socket:
+            issues.append(
+                f"Сокет CPU ({body.cpu_socket}) не совместим "
+                f"с материнской платой ({body.motherboard_socket})"
+            )
+    if body.ram_type and body.motherboard_socket:
+        expected = "DDR5" if body.motherboard_socket in
+                   ("AM5","LGA1700") else "DDR4"
+        if body.ram_type != expected:
+            issues.append(
+                f"Тип ОЗУ {body.ram_type} не подходит "
+                f"для платформы {body.motherboard_socket}"
+            )
+    if body.case_form_factor and body.motherboard_form_factor:
+        if (body.case_form_factor == "Mini Tower" and
+                body.motherboard_form_factor == "ATX"):
+            issues.append("Корпус Mini Tower не вмещает ATX-плату")
+    return {"compatible": len(issues) == 0, "issues": issues}
+\end{lstlisting}
+
+\textbf{Расчёт мощности БП} следует формуле:
+
+\begin{equation}
+  P_\text{rec} = \left\lceil 1.2 \cdot (P_\text{CPU} + P_\text{GPU} + 75 + 15 n_\text{RAM} + 10 n_\text{stor} + 5 n_\text{fans}) \right\rceil_\text{tier}
+\end{equation}
+
+где $\lceil \cdot \rceil_\text{tier}$ обозначает округление вверх до ближайшей стандартной мощности из набора \{400, 450, 500, 550, 600, 650, 750, 850, 1000, 1200, 1600\} Вт.
+
+\begin{lstlisting}[language=Python, caption={Расчёт мощности БП (pc\_builder.py)}]
+BASE_WATTAGE = 75
+TIERS = [400,450,500,550,600,650,750,850,1000,1200,1600]
+
+@router.post("/pc-builder/calc-psu")
+def calc_psu(body: PsuCalcRequest):
+    total = (body.cpu_tdp + body.gpu_tdp + BASE_WATTAGE
+             + 15 * body.ram_sticks
+             + 10 * body.storage_count
+             + 5  * body.extra_fans)
+    raw = total * 1.2
+    rec = next(t for t in TIERS if t >= raw)
+    headroom = round((rec / total - 1) * 100)
+    return {
+        "estimated_load_watts": total,
+        "recommended_psu_watts": rec,
+        "headroom_percent": headroom,
+    }
+\end{lstlisting}
+
+\subsection{Отслеживание просмотров товаров}
+
+Для накопления данных неявной обратной связи реализована таблица \texttt{product\_views}:
+
+\begin{lstlisting}[language=Python, caption={Модель ProductView (models.py)}]
+class ProductView(Base):
+    __tablename__ = "product_views"
+    id               = Column(Integer, primary_key=True)
+    user_id          = Column(Integer, ForeignKey("users.id"),
+                              nullable=True)
+    product_id       = Column(Integer, ForeignKey("products.id"))
+    duration_seconds = Column(Integer, default=0)
+    created_at       = Column(DateTime, default=datetime.utcnow)
+\end{lstlisting}
+
+Фронтенд отправляет событие при уходе со страницы товара через \texttt{useEffect} с cleanup-функцией, фиксируя время просмотра в секундах. Эти данные используются как неявный рейтинг в CF-модели рекомендательной системы: $r_{ui} = \min(1, \text{duration\_seconds} / 60)$.
+
 \section{Развёртывание}
 
 \textbf{Render (бэкенд):} команда запуска \texttt{uvicorn main:app --host 0.0.0.0 --port \$PORT}. Переменные: \texttt{DATABASE\_URL}, \texttt{SECRET\_KEY}, \texttt{RESEND\_API\_KEY}, \texttt{FRONTEND\_URL}.
@@ -771,7 +892,7 @@ def update_order_status(order_id: int, body: dict,
 \begin{itemize}
   \item \textbf{Модульное} --- функции хэширования, токенов, алгоритм лояльности
   \item \textbf{Интеграционное} --- API-эндпоинты + база данных
-  \item \textbf{Функциональное} --- соответствие всем 24 требованиям
+  \item \textbf{Функциональное} --- соответствие всем 32 требованиям
   \item \textbf{UI} --- ручная проверка пользовательских сценариев
 \end{itemize}
 
@@ -861,8 +982,10 @@ Broken Access Control & Role-based guards               & Защищено \\
 \midrule
 Проектирование архитектуры   & 20 \\
 Аутентификация и безопасность & 30 \\
-Каталог товаров и поиск      & 25 \\
+Каталог товаров и поиск      & 30 \\
 Корзина и оформление заказов & 35 \\
+Конфигуратор ПК              & 35 \\
+Отслеживание просмотров (ML-данные) & 15 \\
 Программа лояльности         & 20 \\
 Многоязычный интерфейс       & 15 \\
 Модуль доставки              & 20 \\
@@ -871,13 +994,13 @@ Broken Access Control & Role-based guards               & Защищено \\
 Тестирование и отладка       & 30 \\
 Деплой и конфигурация        & 15 \\
 \midrule
-\textbf{Итого}               & \textbf{270} \\
+\textbf{Итого}               & \textbf{320} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 При ставке 5\,000 тг/час:
-\[\text{Стоимость} = 270 \times 5\,000 = 1\,350\,000 \text{ тг}\]
+\[\text{Стоимость} = 320 \times 5\,000 = 1\,600\,000 \text{ тг}\]
 
 \section{Операционные расходы}
 
@@ -907,7 +1030,7 @@ Resend (до 3\,000 писем/мес)  & 0 тг \\
 \toprule
 \textbf{Решение} & \textbf{Внедрение} & \textbf{/мес} & \textbf{Кастомизация} \\
 \midrule
-TechStore (данная работа) & 1\,350\,000 тг & 7\,900 тг  & Полная \\
+TechStore (данная работа) & 1\,600\,000 тг & 7\,900 тг  & Полная \\
 Shopify Business          & 0              & 50\,000 тг & Ограниченная \\
 Magento Enterprise        & 5\,000\,000 тг & 200\,000 тг & Полная \\
 Kaspi магазин             & 0              & 10--20\% продаж & Минимальная \\
@@ -1245,11 +1368,14 @@ ML-поиск (BM25/LTR)              & \checkmark & Частично   & \textt
     \item модель прогнозирования спроса XGBoost, MAE = 2.3, MAPE = 8.7\%;
     \item Learning-to-Rank поиск (BM25 + CF), превышает ILIKE на 36\% по NDCG@10.
   \end{itemize}
+  \item Реализована система из 23 категорий товаров в 6 группах с динамической загрузкой в боковую панель каталога.
+  \item Разработан конфигуратор ПК с проверкой совместимости по 3 критериям и расчётом мощности БП по формуле с 20\%-м запасом; в базу данных добавлены 35 продуктов PC-комплектующих с JSON-полем \texttt{features}.
+  \item Реализовано отслеживание времени просмотра товаров (\texttt{product\_views}) как источник данных для ML-рекомендаций.
   \item Реализовано полное управление ролями из административной панели: переключение ролей admin/employee/customer и привязка к филиалу в одном интерфейсе.
   \item Администратор получил права на изменение статуса любого заказа с фильтрацией и поиском.
   \item Устранены критические ошибки аутентификации: несоответствие поля \texttt{sub} в JWT-токене, обеспечена обратная совместимость токенов.
   \item Развёрнута облачная инфраструктура с CI/CD (Vercel + Render).
-  \item Все 27 функциональных требований выполнены; p95 времени ответа --- 287 мс.
+  \item Все 32 функциональных требования выполнены; p95 времени ответа --- 287 мс.
   \item Операционные расходы --- 7\,900 тг/мес; окупаемость относительно Kaspi --- 1--2 месяца.
 \end{enumerate}
 
@@ -1327,7 +1453,8 @@ techstore/
 │   │   │   ├── Checkout.jsx
 │   │   │   ├── Orders.jsx
 │   │   │   ├── AdminPanel.jsx
-│   │   │   └── EmployeePortal.jsx
+│   │   │   ├── EmployeePortal.jsx
+│   │   │   └── PcBuilder.jsx
 │   │   ├── context/
 │   │   │   ├── AuthContext.jsx
 │   │   │   └── CartContext.jsx
@@ -1351,7 +1478,9 @@ techstore/
 │       ├── cashback.py
 │       ├── employee.py
 │       ├── delivery.py
-│       └── password_reset.py
+│       ├── password_reset.py
+│       ├── pc_builder.py
+│       └── views.py
 └── render.yaml
 \end{lstlisting}
 
@@ -1385,6 +1514,10 @@ PATCH  & /api/admin/orders/\{id\}/status         & JWT (admin) & Изменит�
 GET    & /api/employee/orders            & JWT (emp.)  & Заказы филиала \\
 PATCH  & /api/employee/orders/\{id\}/status & JWT (emp.) & Статус заказа \\
 GET    & /api/branches                   & Нет         & Список филиалов \\
+GET    & /api/products/categories          & Нет         & Список категорий (23 шт.) \\
+POST   & /api/pc-builder/check-compatibility & Нет       & Проверка совместимости \\
+POST   & /api/pc-builder/calc-psu          & Нет         & Расчёт мощности БП \\
+POST   & /api/views                        & JWT (опц.)  & Запись просмотра товара \\
 \bottomrule
 \end{longtable}
 
